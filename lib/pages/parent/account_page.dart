@@ -13,7 +13,6 @@ import 'package:homebank/widgets/large_button.dart';
 import 'package:provider/provider.dart';
 
 class AccountPage extends StatefulWidget {
-  // 修正: 將 Key key 參數改為 super.key
   const AccountPage({super.key});
 
   @override
@@ -21,7 +20,6 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  // 修正: 將狀態變數移到 State 類別中
   UserModel? currentUser;
   List<UserModel> children = [];
 
@@ -32,7 +30,6 @@ class _AccountPageState extends State<AccountPage> {
     return Scaffold(
       appBar: AppBar(title: Text('帳號管理')),
       body: SafeArea(
-        // 修正: 移除 StatefulBuilder，因為整個頁面已經是 StatefulWidget
         child: Column(
           children: [
             Expanded(
@@ -45,7 +42,7 @@ class _AccountPageState extends State<AccountPage> {
                       await Navigator.push(
                         context,
                         navegateFadein(context, MemberModifyPage(user: child)),
-                      );
+                      ); // 修正: 傳入 user 參數
                       setState(() {});
                     },
                     leading: SizedBox(

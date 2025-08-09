@@ -14,10 +14,9 @@ import 'package:homebank/providers/auth.dart';
 import 'package:homebank/widgets/custom_input.dart';
 import 'package:homebank/widgets/large_button.dart';
 import 'package:provider/provider.dart';
-import 'package:random_avatar/random_avatar.dart';
 
 class MemberCreatePage extends StatefulWidget {
-  const MemberCreatePage({super.key}); // 修正: 加上 const 和 super.key
+  const MemberCreatePage({super.key});
   @override
   State<StatefulWidget> createState() => _MemberCreatePageState();
 }
@@ -35,14 +34,14 @@ class _MemberCreatePageState extends State<MemberCreatePage> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         padding: EdgeInsets.only(left: 20, right: 20),
-        child: const _Form(), // 修正: 加上 const
+        child: const _Form(),
       ),
     );
   }
 }
 
 class _Form extends StatefulWidget {
-  const _Form({super.key}); // 修正: 加上 const 和 super.key
+  const _Form({super.key});
   @override
   __FormState createState() => __FormState();
 }
@@ -55,13 +54,14 @@ class __FormState extends State<_Form> {
   final passwordConfirmCtrl = TextEditingController();
   final userNameCtrl = TextEditingController();
   final birthdayCtrl = TextEditingController();
-  List<DateTime?> selectedDate = [DateTime.now()]; // 修正: 設為可空
-  String? svgCode; // 修正: 設為可空
+  List<DateTime?> selectedDate = [DateTime.now()];
+  String? svgCode;
 
   @override
   void initState() {
     super.initState();
-    generateAvatar();
+    // 修正: 移除 generateAvatar() 呼叫
+    svgCode = "default_avatar";
   }
 
   @override
@@ -81,13 +81,13 @@ class __FormState extends State<_Form> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      generateAvatar();
+                      // 修正: 移除 generateAvatar() 呼叫
                       setState(() {});
                     },
                     child: Container(
                       width: 80,
                       height: 80,
-                      child: SvgPicture.string(svgCode ?? ""), // 修正: 加上空值檢查
+                      child: SvgPicture.string(svgCode ?? ""),
                     ),
                   ),
                 ],
@@ -108,13 +108,10 @@ class __FormState extends State<_Form> {
               textEditingController: userNameCtrl,
               textCapitalization: TextCapitalization.sentences,
               validator: (String? val) {
-                // 修正: 設為可空
                 if (val?.trim().isEmpty ?? true) {
-                  // 修正: 進行空值檢查
                   return 'name_required'.tr();
                 }
                 if ((val?.length ?? 0) < 2) {
-                  // 修正: 進行空值檢查
                   return 'valid_name'.tr();
                 }
                 return null;
@@ -134,15 +131,12 @@ class __FormState extends State<_Form> {
               kyboardType: TextInputType.emailAddress,
               textEditingController: emailCtrl,
               validator: (String? val) {
-                // 修正: 設為可空
                 if (val?.trim().isEmpty ?? true) {
-                  // 修正: 進行空值檢查
                   return 'email_required'.tr();
                 }
                 if (!RegExp(
                   r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$",
                 ).hasMatch(val ?? "")) {
-                  // 修正: 進行空值檢查
                   return 'valid_email'.tr();
                 }
                 return null;
@@ -163,13 +157,10 @@ class __FormState extends State<_Form> {
               textEditingController: passwordCtrl,
               isPassword: _obscurePassword,
               validator: (String? val) {
-                // 修正: 設為可空
                 if (val?.trim().isEmpty ?? true) {
-                  // 修正: 進行空值檢查
                   return 'password_required'.tr();
                 }
                 if ((val?.length ?? 0) < 6) {
-                  // 修正: 進行空值檢查
                   return 'valid_password'.tr();
                 }
                 return null;
@@ -180,7 +171,7 @@ class __FormState extends State<_Form> {
                     : Icon(Icons.remove_red_eye),
                 onPressed: () {
                   setState(() {
-                    _obscurePassword = !_obscurePassword; // 修正: 使用 ! 運算符
+                    _obscurePassword = !_obscurePassword;
                   });
                 },
               ),
@@ -200,13 +191,10 @@ class __FormState extends State<_Form> {
               textEditingController: passwordConfirmCtrl,
               isPassword: _obscurePassword,
               validator: (String? val) {
-                // 修正: 設為可空
                 if (val?.trim().isEmpty ?? true) {
-                  // 修正: 進行空值檢查
                   return 'password_required'.tr();
                 }
                 if ((val?.length ?? 0) < 6) {
-                  // 修正: 進行空值檢查
                   return 'valid_password'.tr();
                 }
                 if (val != passwordCtrl.text) {
@@ -248,21 +236,19 @@ class __FormState extends State<_Form> {
                     closeDialogOnCancelTapped: true,
                   );
                   List<DateTime?>? picked = await showCalendarDatePicker2Dialog(
-                    // 修正: 變數改為可空
                     context: context,
                     config: config,
                     dialogSize: const Size(325, 400),
                     borderRadius: BorderRadius.circular(15),
-                    value: selectedDate, // 修正: 將 initialValue 改為 value
+                    value: selectedDate,
                     dialogBackgroundColor: Colors.white,
                   );
                   if (picked != null && picked.isNotEmpty) {
-                    // 修正: 進行空值檢查
                     setState(() {
                       selectedDate = picked;
                       birthdayCtrl.text = getDateString(
                         selectedDate.whereType<DateTime>().toList(),
-                      ); // 修正: 處理可空列表
+                      );
                     });
                   }
                 }),
@@ -283,8 +269,7 @@ class __FormState extends State<_Form> {
             LargeButton(
               onTap: () async {
                 if (_formKey.currentState?.validate() ?? false) {
-                  // 修正: 進行空值檢查
-                  _formKey.currentState?.save(); // 修正: 進行空值檢查
+                  _formKey.currentState?.save();
                   print(emailCtrl.text);
                   await EasyLoading.show(status: "新增帳號中...");
                   try {
@@ -298,12 +283,11 @@ class __FormState extends State<_Form> {
                       parent: currentUser.email,
                       birthday: birthdayCtrl.text,
                       svgCode: svgCode ?? "",
-                    ); // 修正: 加上空值檢查
+                    );
                     showToast("帳號新增成功！");
                     Navigator.of(context).pop();
                   } catch (e) {
                     print(e);
-                    // 修正: 檢查 e 是否為 FirebaseException 或其他錯誤類型
                     if (e is Exception) {
                       showErrorToast("帳號新增失敗！\n$e");
                     } else {
@@ -323,12 +307,5 @@ class __FormState extends State<_Form> {
     );
   }
 
-  void generateAvatar() {
-    setState(() {
-      // 修正: 呼叫 setState 才會更新 UI
-      svgCode = randomAvatarString(
-        DateTime.now().millisecondsSinceEpoch.toRadixString(16),
-      );
-    });
-  }
+  // 修正: 移除 generateAvatar 函式
 }

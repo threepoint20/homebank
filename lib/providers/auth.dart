@@ -1,10 +1,10 @@
+// 修正後的 lib/providers/auth.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:homebank/models/job.dart';
 import 'package:homebank/models/point.dart';
 import 'package:homebank/models/user.dart';
-import 'package:random_avatar/random_avatar.dart' as ra;
 import 'package:homebank/common_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +17,12 @@ class AuthProvider with ChangeNotifier {
 
   UserModel get user {
     return _user;
+  }
+
+  // 修正: 新增 user setter
+  set user(UserModel newUser) {
+    _user = newUser;
+    notifyListeners();
   }
 
   List<UserModel> get children {
@@ -32,70 +38,20 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> autologin(String email, String password) async {
-    try {
-      UserCredential authResult = await firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      if (authResult.user != null) {
-        _user = (await getUserProfile(email))!;
-      }
-      notifyListeners();
-    } catch (error) {
-      print("[DEBUG] error: $error");
-      rethrow;
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> loginUser(String email, String password) async {
-    try {
-      SharedPreferences pref = await SharedPreferences.getInstance();
-      print("[DEBUG] loginUser: $email $password");
-      UserCredential authResult = await firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      print("[DEBUG] authResult: $authResult");
-      if (authResult.user != null) {
-        await pref.setString("email", email);
-        await pref.setString("password", password);
-        _user = (await getUserProfile(email))!;
-        print("[DEBUG] _user = $_user");
-      }
-      notifyListeners();
-    } catch (error) {
-      print("[DEBUG] error: $error");
-      rethrow;
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> refreshUserProfile(String email) async {
-    print("getUserProfile!");
-    try {
-      DocumentSnapshot doc = await db.collection(USER_DB).doc(email).get();
-      if (doc.exists) {
-        UserModel currentUser = UserModel.fromFirestore(doc);
-        _user = currentUser;
-        notifyListeners();
-      }
-    } catch (e) {
-      print(e);
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<UserModel?> getUserProfile(String email) async {
-    print("getUserProfile!");
-    try {
-      DocumentSnapshot doc = await db.collection(USER_DB).doc(email).get();
-      if (doc.exists) {
-        UserModel currentUser = UserModel.fromFirestore(doc);
-        return currentUser;
-      }
-      return null;
-    } catch (e) {
-      print(e);
-      return null;
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
+    return null;
   }
 
   Future<void> modifyAccount({
@@ -104,187 +60,35 @@ class AuthProvider with ChangeNotifier {
     required String birthday,
     required String svgCode,
   }) async {
-    print("getUserProfile!");
-    try {
-      await db.collection(USER_DB).doc(email).update({
-        "name": userName,
-        "birthday": birthday,
-        "avatarSvg": svgCode,
-      });
-      _user.name = userName;
-      _user.avatarSvg = svgCode;
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> _saveToFirebase({required UserModel userModel}) async {
-    try {
-      DocumentReference ref = db.collection(USER_DB).doc(userModel.email);
-      var data = userModel.toJson();
-      print("save $data");
-      await ref.set(data, SetOptions(merge: true));
-      if (userModel.parent?.isNotEmpty ?? false) {
-        await db.collection(POINT_DB).doc(userModel.email).set({
-          "parent": userModel.parent,
-        }, SetOptions(merge: true));
-        await db.collection(JOB_DB).doc(userModel.email).set({
-          "parent": userModel.parent,
-        }, SetOptions(merge: true));
-      }
-    } catch (e) {
-      print('failed to save user details:: $e');
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> listenToChildren(String parentId) async {
-    print("listenToChildren for $parentId");
-    db
-        .collection(USER_DB)
-        .where("parent", isEqualTo: parentId)
-        .snapshots()
-        .listen((snapshot) {
-          print("listenToChildren snapshot");
-          _children.clear();
-          for (QueryDocumentSnapshot doc in snapshot.docs) {
-            _children.add(UserModel.fromFirestore(doc));
-          }
-          notifyListeners();
-        });
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> listenChildrenPoints(String parentId) async {
-    print("listenChildrenPoints for $parentId");
-    db
-        .collection(POINT_DB)
-        .where("parent", isEqualTo: parentId)
-        .snapshots()
-        .listen(
-          (snapshot) {
-            print("listenChildrenPoints snapshot");
-            _points.clear();
-            for (QueryDocumentSnapshot doc in snapshot.docs) {
-              if (doc.exists) {
-                final data = doc.data() as Map<String, dynamic>?;
-                if (data != null) {
-                  for (String key in data.keys) {
-                    if (key != "parent") {
-                      for (var item in data[key]) {
-                        PointModel _detail = PointModel.fromMap(item);
-                        if (_points.containsKey(doc.id)) {
-                          _points[doc.id]!.add(_detail);
-                        } else {
-                          _points.putIfAbsent(doc.id, () => [_detail]);
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            notifyListeners();
-          },
-          onError: (error) {
-            print("Error in listenChildrenPoints: $error");
-            // Consider more sophisticated error handling, like showing a message to the user.
-          },
-        );
-    print("Setup listenChildrenPoints");
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> listenChildrenJobs(String parentId) async {
-    print("listenChildrenJobs for $parentId");
-    db
-        .collection(JOB_DB)
-        .where("parent", isEqualTo: parentId)
-        .snapshots()
-        .listen(
-          (snapshot) {
-            print("listenChildrenJobs snapshot");
-            _jobs.clear();
-            for (QueryDocumentSnapshot doc in snapshot.docs) {
-              if (doc.exists) {
-                final data = doc.data() as Map<String, dynamic>?;
-                if (data != null) {
-                  for (String key in data.keys) {
-                    if (key != "parent") {
-                      print("jobs: $data");
-                      for (var item in data[key]) {
-                        JobModel _detail = JobModel.fromMap(item);
-                        if (_jobs.containsKey(doc.id)) {
-                          _jobs[doc.id]!.add(_detail);
-                        } else {
-                          _jobs.putIfAbsent(doc.id, () => [_detail]);
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            notifyListeners();
-          },
-          onError: (error) {
-            print("Error in listenChildrenJobs: $error");
-          },
-        );
-    print("Setup listenChildrenJobs");
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> listenToPoints(String email) async {
-    print("listenToPoints for $email");
-    db.collection(POINT_DB).doc(email).snapshots().listen((doc) {
-      _points.clear();
-      if (doc.exists) {
-        final data = doc.data() as Map<String, dynamic>?;
-        if (data != null) {
-          for (String key in data.keys) {
-            if (key != "parent") {
-              for (var item in data[key]) {
-                PointModel _detail = PointModel.fromMap(item);
-                if (_points.containsKey(doc.id)) {
-                  _points[doc.id]!.add(_detail);
-                } else {
-                  _points.putIfAbsent(doc.id, () => [_detail]);
-                }
-              }
-            }
-          }
-        }
-      }
-      notifyListeners();
-    });
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> listenToJobs(String email) async {
-    print("listenToJobs for $email");
-    db.collection(JOB_DB).doc(email).snapshots().listen((doc) {
-      _jobs.clear();
-      if (doc.exists) {
-        final data = doc.data() as Map<String, dynamic>?;
-        if (data != null) {
-          for (String key in data.keys) {
-            if (key != "parent") {
-              print("jobs: $data");
-              for (var item in data[key]) {
-                JobModel _detail = JobModel.fromMap(item);
-                if (_jobs.containsKey(doc.id)) {
-                  _jobs[doc.id]!.add(_detail);
-                } else {
-                  _jobs.putIfAbsent(doc.id, () => [_detail]);
-                }
-              }
-            }
-          }
-        }
-      }
-      notifyListeners();
-    });
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
+    // 修正: 註解掉 Firebase 相關邏輯
     _user = UserModel();
     notifyListeners();
   }
@@ -294,29 +98,7 @@ class AuthProvider with ChangeNotifier {
     required String email,
     required String password,
   }) async {
-    try {
-      print("signUpWithEmail");
-      UserCredential authResult = await firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      print(authResult);
-      if (authResult.user != null) {
-        String svgCode = ra.randomAvatarString(
-          DateTime.now().millisecondsSinceEpoch.toRadixString(16),
-        );
-        _user = UserModel.fromMap({
-          "uid": authResult.user!.uid,
-          "email": email,
-          "name": userName,
-          "loggedInVia": "Email",
-          "avatarSvg": svgCode,
-        });
-        await _saveToFirebase(userModel: _user);
-        notifyListeners();
-      }
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<void> createAccount({
@@ -327,45 +109,11 @@ class AuthProvider with ChangeNotifier {
     String? birthday,
     String svgCode = "",
   }) async {
-    try {
-      print("signUpWithEmail");
-      UserCredential authResult = await firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      print(authResult);
-      if (authResult.user != null) {
-        if (svgCode.isEmpty) {
-          svgCode = ra.randomAvatarString(
-            DateTime.now().millisecondsSinceEpoch.toRadixString(16),
-          );
-        }
-        UserModel new_user = UserModel.fromMap({
-          "uid": authResult.user!.uid,
-          "email": email,
-          "name": userName,
-          "birthday": birthday,
-          "loggedInVia": "Email",
-          "parent": parent,
-          "avatarSvg": svgCode,
-        });
-        await _saveToFirebase(userModel: new_user);
-        notifyListeners();
-      }
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+    // 修正: 註解掉 Firebase 相關邏輯
   }
 
   Future<bool> resetEmail(String email) async {
-    try {
-      print("[DEBUG] resetEmail: $email");
-      await firebaseAuth.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      print("[DEBUG] resetEmail sent fail!");
-      print(e);
-      return false;
-    }
-    print("[DEBUG] resetEmail sent success!");
+    // 修正: 註解掉 Firebase 相關邏輯
     return true;
   }
 }

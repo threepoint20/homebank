@@ -518,12 +518,6 @@
       "languageVersion": "2.17"
     },
     {
-      "name": "random_avatar",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/random_avatar-0.0.8",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "shared_preferences",
       "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/shared_preferences-2.5.3",
       "packageUri": "lib/",
@@ -615,51 +609,51 @@
     },
     {
       "name": "url_launcher",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher-6.1.6",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher-6.3.2",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "3.6"
     },
     {
       "name": "url_launcher_android",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_android-6.0.21",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_android-6.3.17",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "3.6"
     },
     {
       "name": "url_launcher_ios",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_ios-6.0.17",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_ios-6.3.3",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "3.4"
     },
     {
       "name": "url_launcher_linux",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_linux-3.0.1",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_linux-3.2.1",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.3"
     },
     {
       "name": "url_launcher_macos",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_macos-3.0.1",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_macos-3.2.2",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.3"
     },
     {
       "name": "url_launcher_platform_interface",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_platform_interface-2.1.1",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_platform_interface-2.3.2",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.1"
     },
     {
       "name": "url_launcher_web",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_web-2.0.13",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_web-2.4.1",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.6"
     },
     {
       "name": "url_launcher_windows",
-      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_windows-3.0.1",
+      "rootUri": "file:///Users/suying-chu/.pub-cache/hosted/pub.dev/url_launcher_windows-3.1.4",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.4"
     },
     {
       "name": "vector_graphics",

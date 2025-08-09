@@ -29,7 +29,6 @@
         "jiffy",
         "local_auth",
         "provider",
-        "random_avatar",
         "shared_preferences",
         "url_launcher"
       ],
@@ -75,7 +74,7 @@
     },
     {
       "name": "url_launcher",
-      "version": "6.1.6",
+      "version": "6.3.2",
       "dependencies": [
         "flutter",
         "url_launcher_android",
@@ -157,15 +156,6 @@
         "vector_graphics",
         "vector_graphics_codec",
         "vector_graphics_compiler"
-      ]
-    },
-    {
-      "name": "random_avatar",
-      "version": "0.0.8",
-      "dependencies": [
-        "crypto",
-        "flutter",
-        "flutter_svg"
       ]
     },
     {
@@ -480,7 +470,7 @@
     },
     {
       "name": "url_launcher_windows",
-      "version": "3.0.1",
+      "version": "3.1.4",
       "dependencies": [
         "flutter",
         "url_launcher_platform_interface"
@@ -488,16 +478,17 @@
     },
     {
       "name": "url_launcher_web",
-      "version": "2.0.13",
+      "version": "2.4.1",
       "dependencies": [
         "flutter",
         "flutter_web_plugins",
-        "url_launcher_platform_interface"
+        "url_launcher_platform_interface",
+        "web"
       ]
     },
     {
       "name": "url_launcher_platform_interface",
-      "version": "2.1.1",
+      "version": "2.3.2",
       "dependencies": [
         "flutter",
         "plugin_platform_interface"
@@ -505,7 +496,7 @@
     },
     {
       "name": "url_launcher_macos",
-      "version": "3.0.1",
+      "version": "3.2.2",
       "dependencies": [
         "flutter",
         "url_launcher_platform_interface"
@@ -513,7 +504,7 @@
     },
     {
       "name": "url_launcher_linux",
-      "version": "3.0.1",
+      "version": "3.2.1",
       "dependencies": [
         "flutter",
         "url_launcher_platform_interface"
@@ -521,7 +512,7 @@
     },
     {
       "name": "url_launcher_ios",
-      "version": "6.0.17",
+      "version": "6.3.3",
       "dependencies": [
         "flutter",
         "url_launcher_platform_interface"
@@ -529,7 +520,7 @@
     },
     {
       "name": "url_launcher_android",
-      "version": "6.0.21",
+      "version": "6.3.17",
       "dependencies": [
         "flutter",
         "url_launcher_platform_interface"
@@ -666,13 +657,6 @@
         "http_parser",
         "meta",
         "web"
-      ]
-    },
-    {
-      "name": "crypto",
-      "version": "3.0.2",
-      "dependencies": [
-        "typed_data"
       ]
     },
     {
@@ -991,13 +975,6 @@
       ]
     },
     {
-      "name": "typed_data",
-      "version": "1.3.1",
-      "dependencies": [
-        "collection"
-      ]
-    },
-    {
       "name": "flutter_plugin_android_lifecycle",
       "version": "2.0.7",
       "dependencies": [
@@ -1067,12 +1044,26 @@
       ]
     },
     {
+      "name": "typed_data",
+      "version": "1.3.1",
+      "dependencies": [
+        "collection"
+      ]
+    },
+    {
       "name": "pointycastle",
       "version": "3.9.1",
       "dependencies": [
         "collection",
         "convert",
         "js"
+      ]
+    },
+    {
+      "name": "crypto",
+      "version": "3.0.2",
+      "dependencies": [
+        "typed_data"
       ]
     },
     {

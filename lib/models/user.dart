@@ -57,6 +57,31 @@ class UserModel {
     };
   }
 
+  // 修正: 新增 copyWith 方法
+  UserModel copyWith({
+    String? uid,
+    String? parent,
+    String? avatarSvg,
+    String? name,
+    String? email,
+    String? profileImageUrl,
+    String? loggedInVia,
+    String? birthday,
+    int? point,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      parent: parent ?? this.parent,
+      avatarSvg: avatarSvg ?? this.avatarSvg,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      loggedInVia: loggedInVia ?? this.loggedInVia,
+      birthday: birthday ?? this.birthday,
+      point: point ?? this.point,
+    );
+  }
+
   bool isParent() {
     return parent == null || parent!.isEmpty;
   }

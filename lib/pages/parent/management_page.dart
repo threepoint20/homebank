@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart'; // 修正: 註解掉 firebase_auth 的匯入
 import 'package:flutter/material.dart';
 import 'package:homebank/helpers/helpers.dart';
 import 'package:homebank/pages/auth/login_email_page.dart';
@@ -9,22 +9,21 @@ import 'package:homebank/pages/parent/statistics_page.dart';
 import 'package:homebank/widgets/large_button.dart';
 
 class ManagementPage extends StatelessWidget {
-  // 修正: 將 Key key 參數改為 super.key
   const ManagementPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('我的')),
+      appBar: AppBar(
+        title: Text('我的'),
+      ),
       body: Container(
         child: Column(
           children: [
             ListTile(
               onTap: () {
                 Navigator.push(
-                  context,
-                  navegateFadein(context, const AccountPage()),
-                );
+                    context, navegateFadein(context, const AccountPage()));
               },
               leading: Image.asset("assets/images/personal.png", width: 20),
               title: Text("帳號管理"),
@@ -32,9 +31,7 @@ class ManagementPage extends StatelessWidget {
             ListTile(
               onTap: () {
                 Navigator.push(
-                  context,
-                  navegateFadein(context, const StatisticsPage()),
-                );
+                    context, navegateFadein(context, const StatisticsPage()));
               },
               leading: Image.asset("assets/images/data.png", width: 20),
               title: Text("統計資料"),
@@ -56,22 +53,19 @@ class ManagementPage extends StatelessWidget {
     );
   }
 
-  // 修正: 將函式改為 private，並將 showDialog 語法調整
   void _showSignoutConfimationDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          borderRadius: BorderRadius.all(
+            Radius.circular(15.0),
+          ),
         ),
         elevation: 5.0,
         contentPadding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16.0,
-          top: 20.0,
-          bottom: 10.0,
-        ),
+            left: 16.0, right: 16.0, top: 20.0, bottom: 10.0),
         content: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,7 +80,9 @@ class ManagementPage extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-            const SizedBox(height: 15.0),
+            const SizedBox(
+              height: 15.0,
+            ),
             const Text(
               '是否確認要登出？',
               style: TextStyle(
@@ -96,7 +92,9 @@ class ManagementPage extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-            const SizedBox(height: 5.0),
+            const SizedBox(
+              height: 5.0,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,13 +122,12 @@ class ManagementPage extends StatelessWidget {
                   child: TextButton(
                     onPressed: () async {
                       Navigator.pop(context);
-                      await FirebaseAuth.instance.signOut();
+                      // 修正: 註解掉 Firebase 登出，並直接導航
+                      // await FirebaseAuth.instance.signOut();
                       await Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginEmailPage(),
-                        ),
-                      );
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginEmailPage()));
                     },
                     child: Text(
                       '是',

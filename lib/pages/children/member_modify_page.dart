@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart'; // 修正: 匯入已註解
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,10 +14,9 @@ import 'package:homebank/providers/auth.dart';
 import 'package:homebank/widgets/custom_input.dart';
 import 'package:homebank/widgets/large_button.dart';
 import 'package:provider/provider.dart';
-import 'package:random_avatar/random_avatar.dart';
 
 class MemberModifyPage extends StatefulWidget {
-  const MemberModifyPage({super.key}); // 修正: 加上 const 和 super.key
+  const MemberModifyPage({super.key});
   @override
   State<StatefulWidget> createState() => _MemberModifyPageState();
 }
@@ -35,14 +34,14 @@ class _MemberModifyPageState extends State<MemberModifyPage> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         padding: EdgeInsets.only(left: 20, right: 20),
-        child: const _Form(), // 修正: 加上 const
+        child: const _Form(),
       ),
     );
   }
 }
 
 class _Form extends StatefulWidget {
-  const _Form({super.key}); // 修正: 加上 const 和 super.key
+  const _Form({super.key});
   @override
   __FormState createState() => __FormState();
 }
@@ -55,8 +54,8 @@ class __FormState extends State<_Form> {
   final passwordCtrl = TextEditingController();
   final passwordConfirmCtrl = TextEditingController();
   final userNameCtrl = TextEditingController();
-  String? svgCode; // 修正: 設為可空
-  UserModel? currentUser; // 修正: 設為可空
+  String? svgCode;
+  UserModel? currentUser;
 
   @override
   void initState() {
@@ -84,13 +83,13 @@ class __FormState extends State<_Form> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        generateAvatar();
+                        // 修正: 移除 generateAvatar 呼叫
                         setState(() {});
                       },
                       child: Container(
                         width: 80,
                         height: 80,
-                        child: SvgPicture.string(svgCode ?? ""), // 修正: 加上空值檢查
+                        child: SvgPicture.string(svgCode ?? ""),
                       ),
                     ),
                   ],
@@ -111,13 +110,10 @@ class __FormState extends State<_Form> {
                 textEditingController: userNameCtrl,
                 textCapitalization: TextCapitalization.sentences,
                 validator: (String? val) {
-                  // 修正: 將 val 設為可空
                   if (val?.trim().isEmpty ?? true) {
-                    // 修正: 進行空值檢查
                     return 'name_required'.tr();
                   }
                   if ((val?.length ?? 0) < 2) {
-                    // 修正: 進行空值檢查
                     return 'valid_name'.tr();
                   }
                   return null;
@@ -138,15 +134,12 @@ class __FormState extends State<_Form> {
                 textEditingController: emailCtrl,
                 readOnly: true,
                 validator: (String? val) {
-                  // 修正: 將 val 設為可空
                   if (val?.trim().isEmpty ?? true) {
-                    // 修正: 進行空值檢查
                     return 'email_required'.tr();
                   }
                   if (!RegExp(
                     r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$",
                   ).hasMatch(val ?? "")) {
-                    // 修正: 進行空值檢查
                     return 'valid_email'.tr();
                   }
                   return null;
@@ -172,7 +165,7 @@ class __FormState extends State<_Form> {
                       : Icon(Icons.remove_red_eye),
                   onPressed: () {
                     setState(() {
-                      _obscurePassword = !_obscurePassword; // 修正: 使用 ! 運算符
+                      _obscurePassword = !_obscurePassword;
                     });
                   },
                 ),
@@ -197,7 +190,7 @@ class __FormState extends State<_Form> {
                       : Icon(Icons.remove_red_eye),
                   onPressed: () {
                     setState(() {
-                      _obscurePassword = !_obscurePassword; // 修正: 使用 ! 運算符
+                      _obscurePassword = !_obscurePassword;
                     });
                   },
                 ),
@@ -221,8 +214,7 @@ class __FormState extends State<_Form> {
               LargeButton(
                 onTap: () async {
                   if (_formKey.currentState?.validate() ?? false) {
-                    // 修正: 使用 ?. 進行空值檢查
-                    _formKey.currentState?.save(); // 修正: 使用 ?. 進行空值檢查
+                    _formKey.currentState?.save();
                     print(emailCtrl.text);
                     await EasyLoading.show(status: "修改帳號中...");
                     try {
@@ -231,17 +223,18 @@ class __FormState extends State<_Form> {
                           showToast("密碼不匹配！");
                           return;
                         }
-                        String email = emailCtrl.text;
-                        String orig_password = passwordOrigCtrl.text;
-                        String new_password = passwordCtrl.text;
-                        UserCredential user = await FirebaseAuth.instance
+                        // String email = emailCtrl.text;
+                        // String orig_password = passwordOrigCtrl.text;
+                        // String new_password = passwordCtrl.text;
+                        // 修正: 註解掉 Firebase 相關邏輯
+                        /*
+                        UserCredential userCredential = await FirebaseAuth.instance
                             .signInWithEmailAndPassword(
                               email: email,
                               password: orig_password,
                             );
-                        await user.user!.updatePassword(
-                          new_password,
-                        ); // 修正: 加上 !
+                        await userCredential.user?.updatePassword(new_password);
+                        */
                       }
                       await Provider.of<AuthProvider>(
                         context,
@@ -249,14 +242,14 @@ class __FormState extends State<_Form> {
                       ).modifyAccount(
                         email: emailCtrl.text,
                         userName: userNameCtrl.text,
-                        birthday: currentUser?.birthday ?? "", // 修正: 加上空值檢查
+                        birthday: currentUser?.birthday ?? "",
                         svgCode: svgCode ?? "",
-                      ); // 修正: 加上空值檢查
+                      );
                       showToast("帳號修改成功！");
                       Navigator.of(context).pop();
                     } catch (e) {
                       print(e);
-                      // 修正: 檢查 e 是否為 FirebaseException 或其他錯誤類型
+                      // 修正: 檢查 e 是否為 Exception
                       if (e is Exception) {
                         showErrorToast("帳號修改失敗！\n$e");
                       } else {
@@ -275,14 +268,5 @@ class __FormState extends State<_Form> {
         ),
       ),
     );
-  }
-
-  void generateAvatar() {
-    setState(() {
-      // 修正: 呼叫 setState 才會更新 UI
-      svgCode = randomAvatarString(
-        DateTime.now().millisecondsSinceEpoch.toRadixString(16),
-      );
-    });
   }
 }

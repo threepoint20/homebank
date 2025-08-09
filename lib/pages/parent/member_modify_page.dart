@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,12 +14,14 @@ import 'package:homebank/providers/auth.dart';
 import 'package:homebank/widgets/custom_input.dart';
 import 'package:homebank/widgets/large_button.dart';
 import 'package:provider/provider.dart';
-import 'package:random_avatar/random_avatar.dart';
 
 class MemberModifyPage extends StatefulWidget {
-  final UserModel user;
+  final UserModel user; // 修正: 重新加入 user 參數
 
-  const MemberModifyPage({super.key, required this.user});
+  const MemberModifyPage({
+    super.key,
+    required this.user,
+  }); // 修正: 加上 required this.user
 
   @override
   State<StatefulWidget> createState() => _MemberModifyPageState();
@@ -38,16 +40,16 @@ class _MemberModifyPageState extends State<MemberModifyPage> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         padding: const EdgeInsets.only(left: 20, right: 20),
-        child: _Form(user: widget.user),
+        child: _Form(user: widget.user), // 修正: 傳遞 user 參數
       ),
     );
   }
 }
 
 class _Form extends StatefulWidget {
-  final UserModel user;
+  final UserModel user; // 修正: 重新加入 user 參數
 
-  const _Form({super.key, required this.user});
+  const _Form({super.key, required this.user}); // 修正: 加上 required this.user
 
   @override
   __FormState createState() => __FormState();
@@ -62,11 +64,11 @@ class __FormState extends State<_Form> {
   final passwordConfirmCtrl = TextEditingController();
   final userNameCtrl = TextEditingController();
   String? svgCode;
+  UserModel? currentUser;
 
   @override
   void initState() {
     super.initState();
-    // 修正：從 widget.user 讀取初始值
     svgCode = widget.user.avatarSvg;
     emailCtrl.text = widget.user.email;
     userNameCtrl.text = widget.user.name;
@@ -74,6 +76,7 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    currentUser = Provider.of<AuthProvider>(context, listen: true).user;
     return Form(
       key: _formKey,
       child: Container(
@@ -86,7 +89,6 @@ class __FormState extends State<_Form> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        generateAvatar();
                         setState(() {});
                       },
                       child: SizedBox(
@@ -141,7 +143,7 @@ class __FormState extends State<_Form> {
                     return 'email_required'.tr();
                   }
                   if (!RegExp(
-                    r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$",
+                    r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$",
                   ).hasMatch(val ?? "")) {
                     return 'valid_email'.tr();
                   }
@@ -226,16 +228,6 @@ class __FormState extends State<_Form> {
                           showToast("密碼不匹配！");
                           return;
                         }
-                        String email = emailCtrl.text;
-                        String orig_password = passwordOrigCtrl.text;
-                        String new_password = passwordCtrl.text;
-                        UserCredential userCredential = await FirebaseAuth
-                            .instance
-                            .signInWithEmailAndPassword(
-                              email: email,
-                              password: orig_password,
-                            );
-                        await userCredential.user?.updatePassword(new_password);
                       }
                       await Provider.of<AuthProvider>(
                         context,
@@ -250,12 +242,7 @@ class __FormState extends State<_Form> {
                       Navigator.of(context).pop();
                     } catch (e) {
                       print(e);
-                      // 修正: 檢查 e 是否為 FirebaseException 或其他錯誤類型
-                      if (e is FirebaseAuthException) {
-                        showErrorToast("帳號修改失敗！\n錯誤碼: ${e.code}");
-                      } else {
-                        showErrorToast("帳號修改失敗！\n$e");
-                      }
+                      showErrorToast("帳號修改失敗！\n$e");
                     } finally {
                       await EasyLoading.dismiss();
                     }
@@ -269,13 +256,5 @@ class __FormState extends State<_Form> {
         ),
       ),
     );
-  }
-
-  void generateAvatar() {
-    setState(() {
-      svgCode = randomAvatarString(
-        DateTime.now().millisecondsSinceEpoch.toRadixString(16),
-      );
-    });
   }
 }

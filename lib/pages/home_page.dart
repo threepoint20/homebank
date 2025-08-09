@@ -17,7 +17,6 @@ import 'package:homebank/providers/auth.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  // 修正: 將 Key key 參數改為 super.key
   const HomePage({super.key});
 
   @override
@@ -25,7 +24,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // 修正: 移除 UserModel user;，並直接在 build 方法中取得 Provider 的 user
   int currentTab = 2;
 
   @override
@@ -35,8 +33,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 修正: 使用 Provider.of 取得 UserModel，並確保它不為 null
     final user = Provider.of<AuthProvider>(context, listen: true).user;
+
+    // 修正: 移除這段永遠為真的判斷，因為 user.name 的預設值為空
+    // if (user.name.isEmpty) {
+    //   return const Scaffold(
+    //     body: Center(
+    //       child: CircularProgressIndicator(),
+    //     ),
+    //   );
+    // }
+
     return Scaffold(
       bottomNavigationBar: user.isParent()
           ? buildParentNavigetionBar(context)
@@ -50,17 +57,17 @@ class _HomePageState extends State<HomePage> {
   Widget buildParentTabs(int currentTab) {
     switch (currentTab) {
       case 0:
-        return ManagementPage();
+        return const ManagementPage();
       case 1:
-        return WorkPage();
+        return const WorkPage();
       case 2:
-        return TransferPage();
+        return const TransferPage();
       case 3:
-        return DetailPage();
+        return const DetailPage();
       case 4:
-        return AwardPage();
+        return const AwardPage();
       default:
-        return DetailPage();
+        return const DetailPage();
     }
   }
 
@@ -132,17 +139,17 @@ class _HomePageState extends State<HomePage> {
   Widget buildChildrenTabs(int currentTab) {
     switch (currentTab) {
       case 0:
-        return MyManagementPage();
+        return const MyManagementPage();
       case 1:
-        return MyWorksPage();
+        return const MyWorksPage();
       case 2:
-        return MyHomePage();
+        return const MyHomePage();
       case 3:
-        return MyDetailPage();
+        return const MyDetailPage();
       case 4:
-        return MyAwardPage();
+        return const MyAwardPage();
       default:
-        return MyHomePage();
+        return const MyHomePage();
     }
   }
 

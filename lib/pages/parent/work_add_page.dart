@@ -91,13 +91,6 @@ class _WorkAddPageState extends State<WorkAddPage> {
                           borderRadius: BorderRadius.circular(15),
                           value: selectedDate, // 修正: 將 initialValue 改為 value
                           dialogBackgroundColor: Colors.white,
-                          selectableDayPredicate: (day) => !day
-                              .difference(
-                                selectedDate.first!.subtract(
-                                  const Duration(days: 5),
-                                ),
-                              )
-                              .isNegative,
                         );
                     if (picked != null && picked.isNotEmpty) {
                       setState(() {
