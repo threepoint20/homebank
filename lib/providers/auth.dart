@@ -34,9 +34,11 @@ class AuthProvider with ChangeNotifier {
   Future<void> autologin(String email, String password) async {
     try {
       UserCredential authResult = await firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       if (authResult.user != null) {
-        _user = await getUserProfile(email);
+        _user = await getUserProfile(email) as UserModel;
       }
       notifyListeners();
     } catch (error) {
@@ -50,12 +52,14 @@ class AuthProvider with ChangeNotifier {
       SharedPreferences pref = await SharedPreferences.getInstance();
       print("[DEBUG] loginUser: $email $password");
       UserCredential authResult = await firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       print("[DEBUG] authResult: $authResult");
       if (authResult.user != null) {
         await pref.setString("email", email);
         await pref.setString("password", password);
-        _user = await getUserProfile(email);
+        _user = await getUserProfile(email) as UserModel;
         print("[DEBUG] _user = $_user");
       }
       notifyListeners();
@@ -79,7 +83,7 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<UserModel> getUserProfile(String email) async {
+  Future<UserModel?> getUserProfile(String email) async {
     print("getUserProfile!");
     try {
       DocumentSnapshot doc = await db.collection(USER_DB).doc(email).get();
@@ -94,8 +98,12 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> modifyAccount(
-      {String email, String userName, String birthday, String svgCode}) async {
+  Future<void> modifyAccount({
+    required String email,
+    required String userName,
+    required String birthday,
+    required String svgCode,
+  }) async {
     print("getUserProfile!");
     try {
       await db.collection(USER_DB).doc(email).update({
@@ -111,21 +119,19 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _saveToFirebase({UserModel userModel}) async {
+  Future<void> _saveToFirebase({required UserModel userModel}) async {
     try {
       DocumentReference ref = db.collection(USER_DB).doc(userModel.email);
       var data = userModel.toJson();
       print("save $data");
       await ref.set(data, SetOptions(merge: true));
-      if (userModel.parent == null || userModel.parent.isNotEmpty) {
-        await db
-            .collection(POINT_DB)
-            .doc(userModel.email)
-            .set({"parent": userModel.parent}, SetOptions(merge: true));
-        await db
-            .collection(JOB_DB)
-            .doc(userModel.email)
-            .set({"parent": userModel.parent}, SetOptions(merge: true));
+      if (userModel.parent?.isNotEmpty ?? false) {
+        await db.collection(POINT_DB).doc(userModel.email).set({
+          "parent": userModel.parent,
+        }, SetOptions(merge: true));
+        await db.collection(JOB_DB).doc(userModel.email).set({
+          "parent": userModel.parent,
+        }, SetOptions(merge: true));
       }
     } catch (e) {
       print('failed to save user details:: $e');
@@ -134,38 +140,95 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> listenToChildren(String parentId) async {
     print("listenToChildren for $parentId");
-    List<UserModel> users = [];
     db
         .collection(USER_DB)
         .where("parent", isEqualTo: parentId)
         .snapshots()
         .listen((snapshot) {
-      _children.clear();
-      for (QueryDocumentSnapshot doc in snapshot.docs) {
-        _children.add(UserModel.fromFirestore(doc));
-      }
-      notifyListeners();
-    });
+          _children.clear();
+          for (QueryDocumentSnapshot doc in snapshot.docs) {
+            _children.add(UserModel.fromFirestore(doc));
+          }
+          notifyListeners();
+        });
   }
 
   Future<void> listenChildrenPoints(String parentId) async {
     print("listenChildrenPoints for $parentId");
-    List<PointModel> _point_list = [];
     db
         .collection(POINT_DB)
         .where("parent", isEqualTo: parentId)
         .snapshots()
         .listen((snapshot) {
+          _points.clear();
+          for (QueryDocumentSnapshot doc in snapshot.docs) {
+            if (doc.exists) {
+              final data = doc.data() as Map<String, dynamic>?;
+              if (data != null) {
+                for (String key in data.keys) {
+                  if (key != "parent") {
+                    for (var item in data[key]) {
+                      PointModel _detail = PointModel.fromMap(item);
+                      if (_points.containsKey(doc.id)) {
+                        _points[doc.id]!.add(_detail);
+                      } else {
+                        _points.putIfAbsent(doc.id, () => [_detail]);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          notifyListeners();
+        });
+  }
+
+  Future<void> listenChildrenJobs(String parentId) async {
+    print("listenChildrenJobs for $parentId");
+    db
+        .collection(JOB_DB)
+        .where("parent", isEqualTo: parentId)
+        .snapshots()
+        .listen((snapshot) {
+          _jobs.clear();
+          for (QueryDocumentSnapshot doc in snapshot.docs) {
+            if (doc.exists) {
+              final data = doc.data() as Map<String, dynamic>?;
+              if (data != null) {
+                for (String key in data.keys) {
+                  if (key != "parent") {
+                    print("jobs: $data");
+                    for (var item in data[key]) {
+                      JobModel _detail = JobModel.fromMap(item);
+                      if (_jobs.containsKey(doc.id)) {
+                        _jobs[doc.id]!.add(_detail);
+                      } else {
+                        _jobs.putIfAbsent(doc.id, () => [_detail]);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          notifyListeners();
+        });
+  }
+
+  Future<void> listenToPoints(String email) async {
+    print("listenToPoints for $email");
+    db.collection(POINT_DB).doc(email).snapshots().listen((doc) {
       _points.clear();
-      for (QueryDocumentSnapshot doc in snapshot.docs) {
-        if (doc.exists) {
-          for (String key in doc.data().keys) {
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          for (String key in data.keys) {
             if (key != "parent") {
-              for (var item in doc.data()[key]) {
+              for (var item in data[key]) {
                 PointModel _detail = PointModel.fromMap(item);
-                _point_list.add(_detail);
                 if (_points.containsKey(doc.id)) {
-                  _points[doc.id].add(_detail);
+                  _points[doc.id]!.add(_detail);
                 } else {
                   _points.putIfAbsent(doc.id, () => [_detail]);
                 }
@@ -178,25 +241,20 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
-  Future<void> listenChildrenJobs(String parentId) async {
-    print("listenChildrenJobs for $parentId");
-    List<JobModel> _job_list = [];
-    db
-        .collection(JOB_DB)
-        .where("parent", isEqualTo: parentId)
-        .snapshots()
-        .listen((snapshot) {
+  Future<void> listenToJobs(String email) async {
+    print("listenToJobs for $email");
+    db.collection(JOB_DB).doc(email).snapshots().listen((doc) {
       _jobs.clear();
-      for (QueryDocumentSnapshot doc in snapshot.docs) {
-        if (doc.exists) {
-          for (String key in doc.data().keys) {
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          for (String key in data.keys) {
             if (key != "parent") {
-              print("jobs: ${doc.data()}");
-              for (var item in doc.data()[key]) {
+              print("jobs: $data");
+              for (var item in data[key]) {
                 JobModel _detail = JobModel.fromMap(item);
-                _job_list.add(_detail);
                 if (_jobs.containsKey(doc.id)) {
-                  _jobs[doc.id].add(_detail);
+                  _jobs[doc.id]!.add(_detail);
                 } else {
                   _jobs.putIfAbsent(doc.id, () => [_detail]);
                 }
@@ -209,63 +267,17 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
-  Future<void> listenToPoints(String email) async {
-    print("listenToPoints for $email");
-    List<PointModel> _point_list = [];
-    db.collection(POINT_DB).doc(email).snapshots().listen((doc) {
-      _points.clear();
-      if (doc.exists) {
-        for (String key in doc.data().keys) {
-          if (key != "parent") {
-            for (var item in doc.data()[key]) {
-              PointModel _detail = PointModel.fromMap(item);
-              _point_list.add(_detail);
-              if (_points.containsKey(doc.id)) {
-                _points[doc.id].add(_detail);
-              } else {
-                _points.putIfAbsent(doc.id, () => [_detail]);
-              }
-            }
-          }
-        }
-      }
-      notifyListeners();
-    });
-  }
-
-  Future<void> listenToJobs(String email) async {
-    print("listenToJobs for $email");
-    List<JobModel> _job_list = [];
-    db.collection(JOB_DB).doc(email).snapshots().listen((doc) {
-      _jobs.clear();
-      if (doc.exists) {
-        for (String key in doc.data().keys) {
-          if (key != "parent") {
-            print("jobs: ${doc.data()}");
-            for (var item in doc.data()[key]) {
-              JobModel _detail = JobModel.fromMap(item);
-              _job_list.add(_detail);
-              if (_jobs.containsKey(doc.id)) {
-                _jobs[doc.id].add(_detail);
-              } else {
-                _jobs.putIfAbsent(doc.id, () => [_detail]);
-              }
-            }
-          }
-        }
-      }
-      notifyListeners();
-    });
-  }
-
   Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
-    _user = null;
+    _user = UserModel();
     notifyListeners();
   }
 
-  Future<void> signUpWithEmail(
-      {String userName, String email, String password}) async {
+  Future<void> signUpWithEmail({
+    required String userName,
+    required String email,
+    required String password,
+  }) async {
     try {
       print("signUpWithEmail");
       UserCredential authResult = await firebaseAuth
@@ -273,9 +285,10 @@ class AuthProvider with ChangeNotifier {
       print(authResult);
       if (authResult.user != null) {
         String svgCode = randomAvatarString(
-            DateTime.now().millisecondsSinceEpoch.toRadixString(16));
+          DateTime.now().millisecondsSinceEpoch.toRadixString(16),
+        );
         _user = UserModel.fromMap({
-          "uid": authResult.user.uid,
+          "uid": authResult.user!.uid,
           "email": email,
           "name": userName,
           "loggedInVia": "Email",
@@ -290,13 +303,14 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> createAccount(
-      {String userName,
-      String email,
-      String password,
-      String parent,
-      String birthday,
-      String svgCode = ""}) async {
+  Future<void> createAccount({
+    required String userName,
+    required String email,
+    required String password,
+    String? parent,
+    String? birthday,
+    String svgCode = "",
+  }) async {
     try {
       print("signUpWithEmail");
       UserCredential authResult = await firebaseAuth
@@ -305,10 +319,11 @@ class AuthProvider with ChangeNotifier {
       if (authResult.user != null) {
         if (svgCode.isEmpty) {
           svgCode = randomAvatarString(
-              DateTime.now().millisecondsSinceEpoch.toRadixString(16));
+            DateTime.now().millisecondsSinceEpoch.toRadixString(16),
+          );
         }
         UserModel new_user = UserModel.fromMap({
-          "uid": authResult.user.uid,
+          "uid": authResult.user!.uid,
           "email": email,
           "name": userName,
           "birthday": birthday,
