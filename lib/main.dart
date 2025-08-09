@@ -1,14 +1,10 @@
 // main.dart
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:homebank/pages/auth/login_email_page.dart';
-import 'package:homebank/pages/home_page.dart';
 import 'package:homebank/providers/auth.dart';
 import 'package:homebank/providers/job.dart';
 import 'package:homebank/providers/point.dart';
@@ -17,6 +13,10 @@ import 'package:homebank/routes/routes.dart';
 
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+
+const Color primaryColor = Color(0xFF003783);
+const Color primaryColorLight = Color(0xFFEEF4FC);
+const Color textColor = Color(0xFF313438);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,21 +37,21 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => AuthProvider()),
-        ChangeNotifierProvider(create: (ctx) => PointProvider()),
-        ChangeNotifierProvider(create: (ctx) => JobProvider()),
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => PointProvider()),
+        ChangeNotifierProvider(create: (context) => JobProvider()),
       ],
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
           if (!currentFocus.hasPrimaryFocus) {
-            FocusScope.of(context).requestFocus(FocusNode());
+            currentFocus.unfocus();
           }
         },
         child: MaterialApp(
@@ -59,20 +59,20 @@ class MyApp extends StatelessWidget {
           supportedLocales: context.supportedLocales,
           locale: context.locale,
           theme: ThemeData(
-            primaryColor: const Color(0xFF003783),
-            primaryColorLight: const Color(0xFFEEF4FC),
+            primaryColor: primaryColor,
+            primaryColorLight: primaryColorLight,
             fontFamily: 'Noto Sans TC',
             textTheme: Theme.of(context).textTheme.apply(
-                  bodyColor: const Color(0xff003783),
-                  displayColor: const Color(0xff003783),
+                  bodyColor: primaryColor,
+                  displayColor: primaryColor,
                 ),
             appBarTheme: const AppBarTheme(
-              backgroundColor: Color(0xFFEEF4FC),
-              iconTheme: IconThemeData(color: Color(0xFF313438)),
-              actionsIconTheme: IconThemeData(color: Color(0xFF313438)),
+              backgroundColor: primaryColorLight,
+              iconTheme: IconThemeData(color: textColor),
+              actionsIconTheme: IconThemeData(color: textColor),
               centerTitle: false,
               elevation: 0,
-              titleTextStyle: TextStyle(color: Color(0xFF313438), fontSize: 20),
+              titleTextStyle: TextStyle(color: textColor, fontSize: 20),
             ),
           ),
           debugShowCheckedModeBanner: false,

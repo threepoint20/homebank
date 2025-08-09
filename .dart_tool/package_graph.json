@@ -28,6 +28,7 @@
         "in_date_range",
         "jiffy",
         "local_auth",
+        "page_transition",
         "provider",
         "shared_preferences",
         "url_launcher"
@@ -145,6 +146,13 @@
       "dependencies": [
         "intl",
         "quiver"
+      ]
+    },
+    {
+      "name": "page_transition",
+      "version": "2.0.9",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
@@ -709,13 +717,6 @@
         "flutter_plugin_android_lifecycle",
         "intl",
         "local_auth_platform_interface"
-      ]
-    },
-    {
-      "name": "page_transition",
-      "version": "2.0.9",
-      "dependencies": [
-        "flutter"
       ]
     },
     {

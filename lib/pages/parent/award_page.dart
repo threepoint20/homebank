@@ -9,7 +9,7 @@ import 'package:homebank/models/point.dart';
 import 'package:homebank/models/user.dart';
 import 'package:homebank/pages/parent/award_add_page.dart';
 import 'package:homebank/providers/auth.dart';
-import 'package:homebank/providers/point.dart';
+//import 'package:homebank/providers/point.dart';
 import 'package:homebank/widgets/large_button.dart';
 import 'package:in_date_range/in_date_range.dart';
 import 'package:provider/provider.dart';
@@ -174,9 +174,8 @@ class _AwardPageState extends State<AwardPage> {
               if (picked != null && picked.isNotEmpty) {
                 // 修正: 進行空值檢查
                 setState(() {
-                  _range = picked
-                      .whereType<DateTime>()
-                      .toList(); // 修正: 過濾掉 null
+                  _range =
+                      picked.whereType<DateTime>().toList(); // 修正: 過濾掉 null
                 });
               }
             }),

@@ -10,8 +10,8 @@ import 'package:homebank/models/user.dart';
 import 'package:homebank/providers/auth.dart';
 import 'package:homebank/providers/job.dart';
 import 'package:homebank/providers/point.dart';
-import 'package:homebank/widgets/custom_input.dart';
-import 'package:homebank/widgets/large_button.dart';
+//import 'package:homebank/widgets/custom_input.dart';
+//import 'package:homebank/widgets/large_button.dart';
 import 'package:in_date_range/in_date_range.dart';
 import 'package:provider/provider.dart';
 
@@ -122,16 +122,16 @@ class _WorkDetailPageState extends State<WorkDetailPage> {
                       );
                       List<DateTime?>? picked =
                           await showCalendarDatePicker2Dialog(
-                            // 修正: 變數改為可空
-                            context: context,
-                            config: config,
-                            dialogSize: const Size(325, 400),
-                            borderRadius: BorderRadius.circular(15),
-                            value: [
-                              _currentDate,
-                            ], // 修正: 將 initialValue 改為 value
-                            dialogBackgroundColor: Colors.white,
-                          );
+                        // 修正: 變數改為可空
+                        context: context,
+                        config: config,
+                        dialogSize: const Size(325, 400),
+                        borderRadius: BorderRadius.circular(15),
+                        value: [
+                          _currentDate,
+                        ], // 修正: 將 initialValue 改為 value
+                        dialogBackgroundColor: Colors.white,
+                      );
                       if (picked != null && picked.isNotEmpty) {
                         setState(() {
                           _range = picked.whereType<DateTime>().toList();

@@ -2,53 +2,46 @@ import 'package:flutter/material.dart';
 
 class IconButtonCustom extends StatelessWidget {
   final String title;
-  final Function onTap;
-  IconButtonCustom({
-    @required this.title,
-    @required this.onTap,
- 
-  });
+  final VoidCallback onTap;
+
+  const IconButtonCustom({
+    Key? key,
+    required this.title,
+    required this.onTap,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return 
-    ElevatedButton(
-      style:  ButtonStyle(
-        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-         backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            
-          )
-        )
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.white,
+        padding: EdgeInsets.zero, // 移除內邊距
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        elevation: 0, // 移除陰影
       ),
       onPressed: onTap,
-      
-
       child: Container(
         height: 55,
+        alignment: Alignment.center, // 確保內容置中
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
-          
           children: [
-              Icon(Icons.email, color: Theme.of(context).primaryColor,),
-              SizedBox(
-                width: 10,
+            Icon(Icons.email, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-              Text(
-                this.title,
-                style: TextStyle(
-                  color:Theme.of(context).primaryColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold
-                ),
-              )
-
+            ),
           ],
         ),
       ),
     );
-    
   }
 }

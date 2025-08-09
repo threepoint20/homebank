@@ -13,6 +13,7 @@ class ManagementPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Debug: Building ManagementPage');
     return Scaffold(
       appBar: AppBar(
         title: Text('我的'),
@@ -22,6 +23,7 @@ class ManagementPage extends StatelessWidget {
           children: [
             ListTile(
               onTap: () {
+                print('Debug: Tapped on Account Management');
                 Navigator.push(
                     context, navegateFadein(context, const AccountPage()));
               },
@@ -30,6 +32,7 @@ class ManagementPage extends StatelessWidget {
             ),
             ListTile(
               onTap: () {
+                print('Debug: Tapped on Statistics');
                 Navigator.push(
                     context, navegateFadein(context, const StatisticsPage()));
               },
@@ -41,6 +44,7 @@ class ManagementPage extends StatelessWidget {
               padding: const EdgeInsets.all(30),
               child: LargeButton(
                 onTap: () {
+                  print('Debug: Tapped on Logout button');
                   _showSignoutConfimationDialog(context);
                 },
                 title: "登出",
@@ -54,6 +58,7 @@ class ManagementPage extends StatelessWidget {
   }
 
   void _showSignoutConfimationDialog(BuildContext context) {
+    print('Debug: Showing Signout Confirmation Dialog');
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -104,6 +109,7 @@ class ManagementPage extends StatelessWidget {
                   width: 50.0,
                   child: TextButton(
                     onPressed: () {
+                      print('Debug: Tapped "否" button');
                       Navigator.pop(context);
                     },
                     child: const Text(
@@ -121,13 +127,15 @@ class ManagementPage extends StatelessWidget {
                   width: 50.0,
                   child: TextButton(
                     onPressed: () async {
+                      print('Debug: Tapped "是" button');
                       Navigator.pop(context);
                       // 修正: 註解掉 Firebase 登出，並直接導航
                       // await FirebaseAuth.instance.signOut();
                       await Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginEmailPage()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginEmailPage()),
+                      );
                     },
                     child: Text(
                       '是',

@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
-//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:homebank/common_functions.dart';
 import 'package:homebank/models/job.dart';
 import 'package:homebank/models/user.dart';
-import 'package:homebank/pages/auth/login_email_page.dart';
+//import 'package:homebank/pages/auth/login_email_page.dart';
 import 'package:homebank/providers/auth.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -26,39 +26,40 @@ class _MyHomePageState extends State<MyHomePage> {
       listen: true,
     ).user;
     return Scaffold(
-      appBar: AppBar(title: Text('首頁')),
+      appBar: AppBar(title: const Text('首頁')),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20, right: 20),
               color: Theme.of(context).primaryColorLight,
               child: Card(
                 color: Colors.white,
                 child: Container(
-                  padding: EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
                   child: Row(
                     children: [
                       Image.asset(
                         "assets/images/img_piggy_your_coin.png",
                         width: 90,
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Hi! ${currentUser.name}",
-                            style: TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: 16),
                           ),
-                          SizedBox(height: 3),
-                          Text("你的點數", style: TextStyle(fontSize: 14)),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 3),
+                          const Text("你的點數", style: TextStyle(fontSize: 14)),
+                          const SizedBox(height: 10),
                           Text(
-                            "\$${currentUser.point}",
-                            style: TextStyle(
+                            NumberFormat.currency(locale: 'zh_TW', symbol: '\$')
+                                .format(currentUser.point),
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
@@ -72,8 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              padding: EdgeInsets.only(top: 20),
-              child: Text(
+              padding: const EdgeInsets.only(top: 20),
+              child: const Text(
                 "待完成的工作",
                 style: TextStyle(
                   color: Colors.black,
@@ -84,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.only(left: 20, right: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: buildList(currentUser), // 修正: 將 currentUser 傳入
               ),
             ),
@@ -103,8 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
     print("all_jobs: $all_jobs");
     List<JobModel> _data = all_jobs[currentUser.email] ?? [];
     List<JobModel> data = _data.where((job) => job.finish == false).toList();
-    return ListView.builder(
+    return ListView.separated(
       itemCount: data.length,
+      separatorBuilder: (context, index) => const Divider(),
       itemBuilder: (context, index) {
         return buildDetailTile(
           getShortDate(data[index].date),
@@ -120,14 +122,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return ListTile(
       title: Row(
         children: [
-          Text(date, style: TextStyle(color: Colors.black87, fontSize: 14)),
-          SizedBox(width: 20),
+          Text(date,
+              style: const TextStyle(color: Colors.black87, fontSize: 14)),
+          const SizedBox(width: 20),
           Text(type, style: TextStyle(color: getTypeColor(type), fontSize: 14)),
         ],
       ),
       subtitle: Text(
         detail,
-        style: TextStyle(color: Colors.black, fontSize: 16),
+        style: const TextStyle(color: Colors.black, fontSize: 16),
       ),
       trailing: SizedBox(
         width: 70,

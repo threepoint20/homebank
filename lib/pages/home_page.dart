@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last
 
 import 'package:flutter/material.dart';
-import 'package:homebank/models/user.dart';
+//import 'package:homebank/models/user.dart';
 import 'package:homebank/pages/children/my_award_page.dart';
 import 'package:homebank/pages/children/my_detail_page.dart';
 import 'package:homebank/pages/children/my_home_page.dart';
 import 'package:homebank/pages/children/my_management_page.dart';
-import 'package:homebank/pages/children/my_statistics_page.dart';
+//import 'package:homebank/pages/children/my_statistics_page.dart';
 import 'package:homebank/pages/children/my_works_page.dart';
 import 'package:homebank/pages/parent/detail_page.dart';
 import 'package:homebank/pages/parent/award_page.dart';

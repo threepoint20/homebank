@@ -1,12 +1,12 @@
 // 修正後的 lib/providers/auth.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:homebank/models/job.dart';
 import 'package:homebank/models/point.dart';
 import 'package:homebank/models/user.dart';
-import 'package:homebank/common_functions.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:homebank/common_functions.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
   UserModel _user = UserModel();
@@ -60,10 +60,6 @@ class AuthProvider with ChangeNotifier {
     required String birthday,
     required String svgCode,
   }) async {
-    // 修正: 註解掉 Firebase 相關邏輯
-  }
-
-  Future<void> _saveToFirebase({required UserModel userModel}) async {
     // 修正: 註解掉 Firebase 相關邏輯
   }
 

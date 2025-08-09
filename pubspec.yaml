@@ -45,6 +45,7 @@ dependencies:
   flutter_calendar_carousel: ^2.4.2
   fluttertoast: ^8.2.5
   flutter_svg: ^2.0.11
+  page_transition: ^2.0.9 # 添加這一行
   jiffy: ^6.0.1
   provider: ^6.1.2
   context_menus: ^1.0.2

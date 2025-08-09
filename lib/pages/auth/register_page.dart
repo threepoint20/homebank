@@ -6,18 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:homebank/common_functions.dart';
 import 'package:homebank/helpers/helpers.dart';
-import 'package:homebank/helpers/show_alert.dart';
-import 'package:homebank/models/user.dart';
+//import 'package:homebank/models/user.dart';
 import 'package:homebank/pages/home_page.dart';
 import 'package:homebank/providers/auth.dart';
-//me
 import 'package:homebank/widgets/custom_input.dart';
-import 'package:homebank/widgets/labels.dart';
 import 'package:homebank/widgets/large_button.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key}); // 修正: 加上 const 和 super.key
+  const RegisterPage({Key? key}) : super(key: key);
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -25,19 +23,19 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
-    // double _height = MediaQuery.of(context).size.height; // 修正: 未使用的變數
     return Scaffold(
-      appBar: AppBar(title: Text("註冊")),
+      appBar: AppBar(title: const Text("註冊")),
       body: Container(
-        padding: EdgeInsets.only(left: 20, right: 20),
-        child: const _Form(), // 修正: 加上 const
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: const _Form(),
       ),
     );
   }
 }
 
 class _Form extends StatefulWidget {
-  const _Form({super.key}); // 修正: 加上 const 和 super.key
+  const _Form({Key? key}) : super(key: key);
+
   @override
   __FormState createState() => __FormState();
 }
@@ -51,204 +49,169 @@ class __FormState extends State<_Form> {
   final userNameCtrl = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          Container(
-            padding: EdgeInsets.only(top: 20, bottom: 5),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "使用者名稱",
-              style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
-            ),
-          ),
-          CustomInput(
-            hintText: "使用者名稱", // 修正: 加上 hintText
-            icon: Icons.person_outline, // 修正: 加上 icon
-            kyboardType: TextInputType.text,
-            textEditingController: userNameCtrl,
+          const SizedBox(height: 20),
+          _buildTextField(
+            label: "使用者名稱",
+            hintText: "使用者名稱",
+            icon: Icons.person_outline,
+            controller: userNameCtrl,
+            keyboardType: TextInputType.text,
             textCapitalization: TextCapitalization.sentences,
             validator: (String? val) {
-              // 修正: 將 val 設為可空
-              if (val?.trim().isEmpty ?? true) {
-                // 修正: 進行空值檢查
+              if (val == null || val.trim().isEmpty) {
                 return 'name_required'.tr();
               }
-              if ((val?.length ?? 0) < 2) {
-                // 修正: 進行空值檢查
+              if (val.length < 2) {
                 return 'valid_name'.tr();
               }
               return null;
             },
           ),
-          Container(
-            padding: EdgeInsets.only(top: 20, bottom: 5),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "帳號（請輸入Email）",
-              style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
-            ),
-          ),
-          CustomInput(
-            hintText: "帳號（請輸入Email）", // 修正: 加上 hintText
-            icon: Icons.email_outlined, // 修正: 加上 icon
-            kyboardType: TextInputType.emailAddress,
-            textEditingController: emailCtrl,
+          const SizedBox(height: 20),
+          _buildTextField(
+            label: "帳號（請輸入Email）",
+            hintText: "帳號（請輸入Email）",
+            icon: Icons.email_outlined,
+            controller: emailCtrl,
+            keyboardType: TextInputType.emailAddress,
             validator: (String? val) {
-              // 修正: 將 val 設為可空
-              if (val?.trim().isEmpty ?? true) {
-                // 修正: 進行空值檢查
+              if (val == null || val.trim().isEmpty) {
                 return 'email_required'.tr();
               }
               if (!RegExp(
                 r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$",
-              ).hasMatch(val ?? "")) {
-                // 修正: 進行空值檢查
+              ).hasMatch(val)) {
                 return 'valid_email'.tr();
               }
               return null;
             },
           ),
-          Container(
-            padding: EdgeInsets.only(top: 20, bottom: 5),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "密碼",
-              style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
-            ),
-          ),
-          CustomInput(
-            hintText: "密碼", // 修正: 加上 hintText
-            icon: Icons.lock_outline, // 修正: 加上 icon
-            kyboardType: TextInputType.text,
-            textEditingController: passwordCtrl,
+          const SizedBox(height: 20),
+          _buildTextField(
+            label: "密碼",
+            hintText: "密碼",
+            icon: Icons.lock_outline,
+            controller: passwordCtrl,
+            keyboardType: TextInputType.text,
             isPassword: _obscurePassword,
             validator: (String? val) {
-              // 修正: 將 val 設為可空
-              if (val?.trim().isEmpty ?? true) {
-                // 修正: 進行空值檢查
+              if (val == null || val.trim().isEmpty) {
                 return 'password_required'.tr();
               }
-              if ((val?.length ?? 0) < 6) {
-                // 修正: 進行空值檢查
+              if (val.length < 6) {
                 return 'valid_password'.tr();
               }
               return null;
             },
             suffixIcon: IconButton(
-              icon: _obscurePassword
-                  ? Icon(Icons.remove_red_eye_outlined)
-                  : Icon(Icons.remove_red_eye),
+              icon: Icon(
+                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+              ),
               onPressed: () {
                 setState(() {
-                  _obscurePassword = !_obscurePassword; // 修正: 使用 ! 運算符
+                  _obscurePassword = !_obscurePassword;
                 });
               },
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(top: 20, bottom: 5),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "再次確認密碼",
-              style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
-            ),
-          ),
-          CustomInput(
-            hintText: "再次確認密碼", // 修正: 加上 hintText
-            icon: Icons.lock_outline, // 修正: 加上 icon
-            kyboardType: TextInputType.text,
-            textEditingController: passwordConfirmCtrl,
+          const SizedBox(height: 20),
+          _buildTextField(
+            label: "再次確認密碼",
+            hintText: "再次確認密碼",
+            icon: Icons.lock_outline,
+            controller: passwordConfirmCtrl,
+            keyboardType: TextInputType.text,
             isPassword: _obscurePassword,
             validator: (String? val) {
-              // 修正: 將 val 設為可空
-              if (val?.trim().isEmpty ?? true) {
-                // 修正: 進行空值檢查
+              if (val == null || val.trim().isEmpty) {
                 return 'password_required'.tr();
               }
-              if ((val?.length ?? 0) < 6) {
-                // 修正: 進行空值檢查
-                return 'valid_password'.tr();
-              }
-              print("val: $val, passwordCtrl.text: ${passwordCtrl.text}");
               if (val != passwordCtrl.text) {
                 return "密碼不匹配";
               }
               return null;
             },
           ),
-          Expanded(child: Container()),
+          const Spacer(),
           LargeButton(
             onTap: () async {
               if (_formKey.currentState?.validate() ?? false) {
-                // 修正: 使用 ?. 進行空值檢查
-                _formKey.currentState?.save(); // 修正: 使用 ?. 進行空值檢查
-                print(emailCtrl.text);
-                await EasyLoading.show(status: "註冊中...");
+                _formKey.currentState?.save();
+                EasyLoading.show(status: "註冊中...");
                 try {
-                  await Provider.of<AuthProvider>(
-                    context,
-                    listen: false,
-                  ).signUpWithEmail(
+                  await Provider.of<AuthProvider>(context, listen: false)
+                      .signUpWithEmail(
                     userName: userNameCtrl.text,
                     email: emailCtrl.text,
                     password: passwordCtrl.text,
                   );
-                  Provider.of<AuthProvider>(
-                    context,
-                    listen: false,
-                  ).listenToChildren(emailCtrl.text);
-                  UserModel currentUser = Provider.of<AuthProvider>(
-                    context,
-                    listen: false,
-                  ).user;
+
+                  final authProvider =
+                      Provider.of<AuthProvider>(context, listen: false);
+                  final currentUser = authProvider.user;
+
                   if (currentUser.isParent()) {
-                    Provider.of<AuthProvider>(
-                      context,
-                      listen: false,
-                    ).listenChildrenJobs(emailCtrl.text);
-                    Provider.of<AuthProvider>(
-                      context,
-                      listen: false,
-                    ).listenChildrenPoints(emailCtrl.text);
+                    authProvider.listenToChildren(emailCtrl.text);
+                    authProvider.listenChildrenJobs(emailCtrl.text);
+                    authProvider.listenChildrenPoints(emailCtrl.text);
                   } else {
-                    Provider.of<AuthProvider>(
-                      context,
-                      listen: false,
-                    ).listenToJobs(emailCtrl.text);
-                    Provider.of<AuthProvider>(
-                      context,
-                      listen: false,
-                    ).listenToPoints(emailCtrl.text);
+                    authProvider.listenToJobs(emailCtrl.text);
+                    authProvider.listenToPoints(emailCtrl.text);
                   }
+
                   Navigator.pushReplacement(
                     context,
                     navegateFadein(context, const HomePage()),
                   );
                 } catch (e) {
-                  // 修正: 檢查 e 是否為 FirebaseException 或其他錯誤類型
-                  if (e is Exception) {
-                    showErrorToast(e.toString());
-                  } else {
-                    showErrorToast("註冊失敗！");
-                  }
+                  showErrorToast(e.toString());
                 } finally {
-                  await EasyLoading.dismiss();
+                  EasyLoading.dismiss();
                 }
               }
             },
             title: 'register_label'.tr(),
           ),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
         ],
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required String hintText,
+    required IconData icon,
+    required TextEditingController controller,
+    required TextInputType keyboardType,
+    bool isPassword = false,
+    String? Function(String?)? validator,
+    Widget? suffixIcon,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: Color(0xFF5E6773), fontSize: 12),
+        ),
+        CustomInput(
+          hintText: hintText,
+          icon: icon,
+          kyboardType: keyboardType,
+          textEditingController: controller,
+          isPassword: isPassword,
+          validator: validator,
+          suffixIcon: suffixIcon,
+          textCapitalization: textCapitalization,
+        ),
+      ],
     );
   }
 }

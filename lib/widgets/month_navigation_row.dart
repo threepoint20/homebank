@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
-class MonthNavigationRow extends StatelessWidget {
+class MonthNavigationRow extends StatefulWidget {
+  const MonthNavigationRow({Key? key}) : super(key: key);
+
+  @override
+  _MonthNavigationRowState createState() => _MonthNavigationRowState();
+}
+
+class _MonthNavigationRowState extends State<MonthNavigationRow> {
   DateTime date = DateTime(DateTime.now().year, DateTime.now().month, 1);
 
   @override
-  // ignore: prefer_expression_function_bodies
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -13,13 +19,15 @@ class MonthNavigationRow extends StatelessWidget {
         Semantics(
           child: TextButton(
             onPressed: () {
-              if (date.month > 1) {
-                date = DateTime(date.year, date.month - 1, 1);
-              } else {
-                date = DateTime(date.year - 1, 12, 1);
-              }
+              setState(() {
+                if (date.month > 1) {
+                  date = DateTime(date.year, date.month - 1, 1);
+                } else {
+                  date = DateTime(date.year - 1, 12, 1);
+                }
+              });
             },
-            child: Icon(Icons.chevron_left),
+            child: const Icon(Icons.chevron_left),
           ),
         ),
         Expanded(
@@ -27,7 +35,9 @@ class MonthNavigationRow extends StatelessWidget {
             alignment: Alignment.center,
             child: Center(
               child: ExcludeSemantics(
-                child: Text(date.toString().split(" ").first),
+                child: Text(
+                  "${date.year}年${date.month}月",
+                ), // 修正: 顯示格式化的日期
               ),
             ),
           ),
@@ -35,13 +45,15 @@ class MonthNavigationRow extends StatelessWidget {
         Semantics(
           child: TextButton(
             onPressed: () {
-              if (date.month < 12) {
-                date = DateTime(date.year, date.month + 1, 1);
-              } else {
-                date = DateTime(date.year + 1, 1, 1);
-              }
+              setState(() {
+                if (date.month < 12) {
+                  date = DateTime(date.year, date.month + 1, 1);
+                } else {
+                  date = DateTime(date.year + 1, 1, 1);
+                }
+              });
             },
-            child: Icon(Icons.chevron_right),
+            child: const Icon(Icons.chevron_right),
           ),
         ),
       ],

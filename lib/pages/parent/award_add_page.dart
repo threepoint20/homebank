@@ -26,10 +26,6 @@ class _AwardAddPageState extends State<AwardAddPage> {
 
   @override
   Widget build(BuildContext context) {
-    UserModel currentUser = Provider.of<AuthProvider>(
-      context,
-      listen: true,
-    ).user;
     List<UserModel> children = Provider.of<AuthProvider>(
       context,
       listen: true,
