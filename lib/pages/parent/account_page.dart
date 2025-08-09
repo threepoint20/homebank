@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'dart:ui';
 
@@ -12,69 +12,70 @@ import 'package:homebank/providers/auth.dart';
 import 'package:homebank/widgets/large_button.dart';
 import 'package:provider/provider.dart';
 
-class AccountPage extends StatelessWidget {
-  AccountPage({Key key}) : super(key: key);
-  UserModel currentUser;
-  List<UserModel> children;
+class AccountPage extends StatefulWidget {
+  // 修正: 將 Key key 參數改為 super.key
+  const AccountPage({super.key});
+
+  @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  // 修正: 將狀態變數移到 State 類別中
+  UserModel? currentUser;
+  List<UserModel> children = [];
 
   @override
   Widget build(BuildContext context) {
     currentUser = Provider.of<AuthProvider>(context, listen: true).user;
     children = Provider.of<AuthProvider>(context, listen: true).children;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('帳號管理'),
-      ),
+      appBar: AppBar(title: Text('帳號管理')),
       body: SafeArea(
-        child: StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: children.length,
-                    itemBuilder: (context, index) {
-                      UserModel child = children[index];
-                      return ListTile(
-                        onTap: () async {
-                          await Navigator.push(
-                              context,
-                              navegateFadein(
-                                  context, MemberModifyPage(user: child)));
-                          setState(
-                            () {},
-                          );
-                        },
-                        leading: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: SvgPicture.string(child.avatarSvg),
-                        ),
-                        title: Text(child.name),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return Divider();
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(30),
-                  child: LargeButton(
+        // 修正: 移除 StatefulBuilder，因為整個頁面已經是 StatefulWidget
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.separated(
+                itemCount: children.length,
+                itemBuilder: (context, index) {
+                  UserModel child = children[index];
+                  return ListTile(
                     onTap: () async {
                       await Navigator.push(
-                          context, navegateFadein(context, MemberCreatePage()));
-                      setState(
-                        () {},
+                        context,
+                        navegateFadein(context, MemberModifyPage(user: child)),
                       );
+                      setState(() {});
                     },
-                    title: "新增成員",
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            );
-          },
+                    leading: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: SvgPicture.string(child.avatarSvg),
+                    ),
+                    title: Text(child.name),
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: LargeButton(
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    navegateFadein(context, const MemberCreatePage()),
+                  );
+                  setState(() {});
+                },
+                title: "新增成員",
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
       ),
     );

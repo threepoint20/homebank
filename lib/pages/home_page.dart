@@ -17,14 +17,15 @@ import 'package:homebank/providers/auth.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  // 修正: 將 Key key 參數改為 super.key
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  UserModel user;
+  // 修正: 移除 UserModel user;，並直接在 build 方法中取得 Provider 的 user
   int currentTab = 2;
 
   @override
@@ -34,7 +35,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<AuthProvider>(context, listen: true).user;
+    // 修正: 使用 Provider.of 取得 UserModel，並確保它不為 null
+    final user = Provider.of<AuthProvider>(context, listen: true).user;
     return Scaffold(
       bottomNavigationBar: user.isParent()
           ? buildParentNavigetionBar(context)
@@ -79,32 +81,47 @@ class _HomePageState extends State<HomePage> {
       },
       items: [
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/personal.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/personal.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/personal.png", width: 22),
           label: '我的',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/work.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/work.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/work.png", width: 22),
           label: '工作項目',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/transfer.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/transfer.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/transfer.png", width: 22),
           label: '轉帳',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/detail.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/detail.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/detail.png", width: 22),
           label: '查詢明細',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/award.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/award.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/award.png", width: 22),
           label: '獎勵專區',
         ),
@@ -146,32 +163,47 @@ class _HomePageState extends State<HomePage> {
       },
       items: [
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/personal.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/personal.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/personal.png", width: 22),
           label: '統計資料',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/work.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/work.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/work.png", width: 22),
           label: '工作項目',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/home.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/home.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/home.png", width: 22),
           label: '首頁',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/detail.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/detail.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/detail.png", width: 22),
           label: '查詢明細',
         ),
         BottomNavigationBarItem(
-          activeIcon: Image.asset("assets/images/myaward.png",
-              width: 22, color: Theme.of(context).primaryColor),
+          activeIcon: Image.asset(
+            "assets/images/myaward.png",
+            width: 22,
+            color: Theme.of(context).primaryColor,
+          ),
           icon: Image.asset("assets/images/myaward.png", width: 22),
           label: '我的徽章',
         ),

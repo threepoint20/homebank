@@ -4,18 +4,29 @@ import 'package:homebank/models/point.dart';
 import 'package:homebank/common_functions.dart';
 
 class PointProvider with ChangeNotifier {
-  Future<void> changePoint(
-      {String email, String type, String note, int point}) async {
+  Future<void> changePoint({
+    required String email,
+    required String type,
+    required String note,
+    required int point,
+  }) async {
     try {
       await db.runTransaction((transaction) async {
         DocumentReference ref = db.collection(USER_DB).doc(email);
         DocumentSnapshot snapshot = await transaction.get(ref);
-        int total = snapshot.data()['point'] + point;
-        transaction.update(ref, {
-          "point": total,
-        });
+
+        // 修正: 檢查 snapshot.data() 是否為空，並進行類型轉換
+        final docData = snapshot.data() as Map<String, dynamic>?;
+        int total = (docData?['point'] as int? ?? 0) + point;
+
+        transaction.update(ref, {"point": total});
         await addRecord(
-            email: email, type: type, note: note, point: point, total: total);
+          email: email,
+          type: type,
+          note: note,
+          point: point,
+          total: total,
+        );
       });
     } catch (e) {
       print(e);
@@ -23,8 +34,13 @@ class PointProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addRecord(
-      {String email, String type, String note, int point, int total}) async {
+  Future<void> addRecord({
+    required String email,
+    required String type,
+    required String note,
+    required int point,
+    required int total,
+  }) async {
     try {
       await db.runTransaction((transaction) async {
         DocumentReference ref = db.collection(POINT_DB).doc(email);
@@ -33,9 +49,21 @@ class PointProvider with ChangeNotifier {
         String year_month =
             "${today.year}-${today.month.toString().padLeft(2, "0")}";
         String datetime = today.toString().split(".").first;
-        List<dynamic> data = snapshot.data()[year_month] ?? [];
+
+        // 修正: 檢查 snapshot.data() 是否為空，並進行類型轉換
+        List<dynamic> data = [];
+        final docData = snapshot.data() as Map<String, dynamic>?;
+        if (docData != null && docData.containsKey(year_month)) {
+          data = docData[year_month] ?? [];
+        }
+
         PointModel model = PointModel(
-            type: type, note: note, date: datetime, point: point, total: total);
+          type: type,
+          note: note,
+          date: datetime,
+          point: point,
+          total: total,
+        );
         data.add(model.toJson());
         transaction.update(ref, {year_month: data});
       });
@@ -45,22 +73,28 @@ class PointProvider with ChangeNotifier {
     }
   }
 
-  Future<Map<String, List<PointModel>>> getPointRecord({String email}) async {
+  Future<Map<String, List<PointModel>>> getPointRecord({
+    required String email,
+  }) async {
     try {
       print("getPointRecord");
       DocumentReference ref = db.collection(POINT_DB).doc(email);
       DocumentSnapshot doc = await ref.get();
       if (doc.exists) {
         Map<String, List<PointModel>> list = {};
-        Map<String, dynamic> data = doc.data();
-        for (var key in data.keys.toList().reversed) {
-          if (key != 'parent') {
-            List<dynamic> details = data[key];
-            List<PointModel> tmp = [];
-            for (var detail in details) {
-              tmp.add(PointModel.fromMap(detail));
+
+        // 修正: 檢查 doc.data() 是否為空，並進行類型轉換
+        final data = doc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          for (var key in data.keys.toList().reversed) {
+            if (key != 'parent') {
+              List<dynamic> details = data[key] as List<dynamic>;
+              List<PointModel> tmp = [];
+              for (var detail in details) {
+                tmp.add(PointModel.fromMap(detail));
+              }
+              list.putIfAbsent(key, () => tmp);
             }
-            list.putIfAbsent(key, () => tmp);
           }
         }
         return list;

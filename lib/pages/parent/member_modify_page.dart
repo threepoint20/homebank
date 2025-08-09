@@ -1,12 +1,15 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:homebank/common_functions.dart';
+import 'package:homebank/helpers/helpers.dart';
+import 'package:homebank/helpers/show_alert.dart';
 import 'package:homebank/models/user.dart';
+import 'package:homebank/pages/parent/work_add_page.dart';
 import 'package:homebank/providers/auth.dart';
 import 'package:homebank/widgets/custom_input.dart';
 import 'package:homebank/widgets/large_button.dart';
@@ -16,14 +19,13 @@ import 'package:random_avatar/random_avatar.dart';
 class MemberModifyPage extends StatefulWidget {
   final UserModel user;
 
-  const MemberModifyPage({Key key, this.user}) : super(key: key);
+  const MemberModifyPage({super.key, required this.user});
+
   @override
   State<StatefulWidget> createState() => _MemberModifyPageState();
 }
 
 class _MemberModifyPageState extends State<MemberModifyPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   @override
   void initState() {
     super.initState();
@@ -32,12 +34,10 @@ class _MemberModifyPageState extends State<MemberModifyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('編輯成員'),
-      ),
+      appBar: AppBar(title: const Text('編輯帳號')),
       body: Container(
         height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.only(left: 20, right: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20),
         child: _Form(user: widget.user),
       ),
     );
@@ -47,31 +47,29 @@ class _MemberModifyPageState extends State<MemberModifyPage> {
 class _Form extends StatefulWidget {
   final UserModel user;
 
-  const _Form({Key key, this.user}) : super(key: key);
+  const _Form({super.key, required this.user});
+
   @override
   __FormState createState() => __FormState();
 }
 
 class __FormState extends State<_Form> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
   final emailCtrl = TextEditingController();
+  final passwordOrigCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+  final passwordConfirmCtrl = TextEditingController();
   final userNameCtrl = TextEditingController();
-  final birthdayCtrl = TextEditingController();
-  List<DateTime> selectedDate = [DateTime.now()];
-  String svgCode;
+  String? svgCode;
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      svgCode = widget.user.avatarSvg;
-      emailCtrl.text = widget.user.email;
-      userNameCtrl.text = widget.user.name;
-      if (widget.user.birthday.isNotEmpty) {
-        birthdayCtrl.text = widget.user.birthday;
-        selectedDate = [DateTime.parse(widget.user.birthday)];
-      }
-    });
+    // 修正：從 widget.user 讀取初始值
+    svgCode = widget.user.avatarSvg;
+    emailCtrl.text = widget.user.email;
+    userNameCtrl.text = widget.user.name;
   }
 
   @override
@@ -79,167 +77,205 @@ class __FormState extends State<_Form> {
     return Form(
       key: _formKey,
       child: Container(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.only(top: 20, bottom: 5),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      generateAvatar();
-                      setState(() {});
-                    },
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      child: SvgPicture.string(svgCode),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 20, bottom: 5),
-              alignment: Alignment.centerLeft,
-              child: Text("帳號（不可修改）",
-                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12)),
-            ),
-            CustomInput(
-              kyboardType: TextInputType.emailAddress,
-              textEditingController: emailCtrl,
-              readOnly: true,
-              validator: (String val) {
-                if (val.trim().isEmpty) {
-                  return 'email_required'.tr();
-                }
-                if (!RegExp(
-                        r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$")
-                    .hasMatch(val)) {
-                  return 'valid_email'.tr();
-                }
-                return null;
-              },
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 20, bottom: 5),
-              alignment: Alignment.centerLeft,
-              child: Text("使用者名稱",
-                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12)),
-            ),
-            CustomInput(
-              kyboardType: TextInputType.text,
-              textEditingController: userNameCtrl,
-              textCapitalization: TextCapitalization.sentences,
-              validator: (String val) {
-                if (val.trim().isEmpty) {
-                  return 'name_required'.tr();
-                }
-                if (val.length < 2) {
-                  return 'valid_name'.tr();
-                }
-                return null;
-              },
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 20, bottom: 5),
-              alignment: Alignment.centerLeft,
-              child: Text("生日",
-                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12)),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Color(0xFFEEF4FC),
-                borderRadius: BorderRadius.circular(4),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8.0,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: TextFormField(
-                textAlignVertical: TextAlignVertical.center,
-                controller: birthdayCtrl,
-                autocorrect: false,
-                style: TextStyle(color: Theme.of(context).primaryColor),
-                readOnly: true,
-                onTap: (() async {
-                  final config = CalendarDatePicker2WithActionButtonsConfig(
-                    calendarType: CalendarDatePicker2Type.single,
-                    selectedDayHighlightColor: Colors.purple[800],
-                    closeDialogOnCancelTapped: true,
-                  );
-                  List<DateTime> picked = await showCalendarDatePicker2Dialog(
-                    context: context,
-                    config: config,
-                    dialogSize: const Size(325, 400),
-                    borderRadius: BorderRadius.circular(15),
-                    initialValue: selectedDate,
-                    dialogBackgroundColor: Colors.white,
-                  );
-                  if (picked.isNotEmpty) {
-                    setState(
-                      () {
-                        selectedDate = picked;
-                        birthdayCtrl.text = getDateString(picked);
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 5),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        generateAvatar();
+                        setState(() {});
                       },
-                    );
-                  }
-                }),
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1, color: Colors.black45),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1, color: Colors.black45),
-                  ),
+                      child: SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: SvgPicture.string(svgCode ?? ""),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            Expanded(
-              child: Container(),
-            ),
-            LargeButton(
-              onTap: () async {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  print(emailCtrl.text);
-                  await EasyLoading.show(status: "修改帳號中...");
-                  try {
-                    await Provider.of<AuthProvider>(context, listen: false)
-                        .modifyAccount(
-                            email: emailCtrl.text,
-                            userName: userNameCtrl.text,
-                            birthday: birthdayCtrl.text,
-                            svgCode: svgCode);
-                    showToast("帳號修改成功！");
-                    Navigator.of(context).pop();
-                  } catch (e) {
-                    print(e);
-                    showErrorToast("帳號修改失敗！\n$e");
-                  } finally {
-                    await EasyLoading.dismiss();
+              Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 5),
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "使用者名稱",
+                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
+                ),
+              ),
+              CustomInput(
+                hintText: "使用者名稱",
+                icon: Icons.person_outline,
+                kyboardType: TextInputType.text,
+                textEditingController: userNameCtrl,
+                textCapitalization: TextCapitalization.sentences,
+                validator: (String? val) {
+                  if (val?.trim().isEmpty ?? true) {
+                    return 'name_required'.tr();
                   }
-                }
-              },
-              title: "修改",
-            ),
-            SizedBox(
-              height: 50,
-            ),
-          ],
+                  if ((val?.length ?? 0) < 2) {
+                    return 'valid_name'.tr();
+                  }
+                  return null;
+                },
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 5),
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "帳號（不可修改）",
+                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
+                ),
+              ),
+              CustomInput(
+                hintText: "帳號（不可修改）",
+                icon: Icons.email_outlined,
+                kyboardType: TextInputType.emailAddress,
+                textEditingController: emailCtrl,
+                readOnly: true,
+                validator: (String? val) {
+                  if (val?.trim().isEmpty ?? true) {
+                    return 'email_required'.tr();
+                  }
+                  if (!RegExp(
+                    r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$",
+                  ).hasMatch(val ?? "")) {
+                    return 'valid_email'.tr();
+                  }
+                  return null;
+                },
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 5),
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "舊密碼",
+                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
+                ),
+              ),
+              CustomInput(
+                hintText: "舊密碼",
+                icon: Icons.lock_outline,
+                kyboardType: TextInputType.text,
+                textEditingController: passwordOrigCtrl,
+                isPassword: _obscurePassword,
+                suffixIcon: IconButton(
+                  icon: _obscurePassword
+                      ? const Icon(Icons.remove_red_eye_outlined)
+                      : const Icon(Icons.remove_red_eye),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 5),
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "新密碼",
+                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
+                ),
+              ),
+              CustomInput(
+                hintText: "新密碼",
+                icon: Icons.lock_outline,
+                kyboardType: TextInputType.text,
+                textEditingController: passwordCtrl,
+                isPassword: _obscurePassword,
+                suffixIcon: IconButton(
+                  icon: _obscurePassword
+                      ? const Icon(Icons.remove_red_eye_outlined)
+                      : const Icon(Icons.remove_red_eye),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 5),
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "再次確認新密碼",
+                  style: TextStyle(color: Color(0xFF5E6773), fontSize: 12),
+                ),
+              ),
+              CustomInput(
+                hintText: "再次確認新密碼",
+                icon: Icons.lock_outline,
+                kyboardType: TextInputType.text,
+                textEditingController: passwordConfirmCtrl,
+                isPassword: _obscurePassword,
+              ),
+              const SizedBox(height: 50),
+              LargeButton(
+                onTap: () async {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    _formKey.currentState?.save();
+                    print(emailCtrl.text);
+                    await EasyLoading.show(status: "修改帳號中...");
+                    try {
+                      if (passwordOrigCtrl.text.isNotEmpty) {
+                        if (passwordCtrl.text != passwordConfirmCtrl.text) {
+                          showToast("密碼不匹配！");
+                          return;
+                        }
+                        String email = emailCtrl.text;
+                        String orig_password = passwordOrigCtrl.text;
+                        String new_password = passwordCtrl.text;
+                        UserCredential userCredential = await FirebaseAuth
+                            .instance
+                            .signInWithEmailAndPassword(
+                              email: email,
+                              password: orig_password,
+                            );
+                        await userCredential.user?.updatePassword(new_password);
+                      }
+                      await Provider.of<AuthProvider>(
+                        context,
+                        listen: false,
+                      ).modifyAccount(
+                        email: emailCtrl.text,
+                        userName: userNameCtrl.text,
+                        birthday: widget.user.birthday ?? "",
+                        svgCode: svgCode ?? "",
+                      );
+                      showToast("帳號修改成功！");
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      print(e);
+                      // 修正: 檢查 e 是否為 FirebaseException 或其他錯誤類型
+                      if (e is FirebaseAuthException) {
+                        showErrorToast("帳號修改失敗！\n錯誤碼: ${e.code}");
+                      } else {
+                        showErrorToast("帳號修改失敗！\n$e");
+                      }
+                    } finally {
+                      await EasyLoading.dismiss();
+                    }
+                  }
+                },
+                title: "修改",
+              ),
+              const SizedBox(height: 50),
+            ],
+          ),
         ),
       ),
     );
   }
 
   void generateAvatar() {
-    svgCode = randomAvatarString(
-        DateTime.now().millisecondsSinceEpoch.toRadixString(16));
+    setState(() {
+      svgCode = randomAvatarString(
+        DateTime.now().millisecondsSinceEpoch.toRadixString(16),
+      );
+    });
   }
 }

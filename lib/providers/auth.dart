@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:homebank/models/job.dart';
 import 'package:homebank/models/point.dart';
 import 'package:homebank/models/user.dart';
-import 'package:random_avatar/random_avatar.dart';
+import 'package:random_avatar/random_avatar.dart' as ra;
 import 'package:homebank/common_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +38,7 @@ class AuthProvider with ChangeNotifier {
         password: password,
       );
       if (authResult.user != null) {
-        _user = await getUserProfile(email) as UserModel;
+        _user = (await getUserProfile(email))!;
       }
       notifyListeners();
     } catch (error) {
@@ -59,7 +59,7 @@ class AuthProvider with ChangeNotifier {
       if (authResult.user != null) {
         await pref.setString("email", email);
         await pref.setString("password", password);
-        _user = await getUserProfile(email) as UserModel;
+        _user = (await getUserProfile(email))!;
         print("[DEBUG] _user = $_user");
       }
       notifyListeners();
@@ -145,6 +145,7 @@ class AuthProvider with ChangeNotifier {
         .where("parent", isEqualTo: parentId)
         .snapshots()
         .listen((snapshot) {
+          print("listenToChildren snapshot");
           _children.clear();
           for (QueryDocumentSnapshot doc in snapshot.docs) {
             _children.add(UserModel.fromFirestore(doc));
@@ -159,29 +160,37 @@ class AuthProvider with ChangeNotifier {
         .collection(POINT_DB)
         .where("parent", isEqualTo: parentId)
         .snapshots()
-        .listen((snapshot) {
-          _points.clear();
-          for (QueryDocumentSnapshot doc in snapshot.docs) {
-            if (doc.exists) {
-              final data = doc.data() as Map<String, dynamic>?;
-              if (data != null) {
-                for (String key in data.keys) {
-                  if (key != "parent") {
-                    for (var item in data[key]) {
-                      PointModel _detail = PointModel.fromMap(item);
-                      if (_points.containsKey(doc.id)) {
-                        _points[doc.id]!.add(_detail);
-                      } else {
-                        _points.putIfAbsent(doc.id, () => [_detail]);
+        .listen(
+          (snapshot) {
+            print("listenChildrenPoints snapshot");
+            _points.clear();
+            for (QueryDocumentSnapshot doc in snapshot.docs) {
+              if (doc.exists) {
+                final data = doc.data() as Map<String, dynamic>?;
+                if (data != null) {
+                  for (String key in data.keys) {
+                    if (key != "parent") {
+                      for (var item in data[key]) {
+                        PointModel _detail = PointModel.fromMap(item);
+                        if (_points.containsKey(doc.id)) {
+                          _points[doc.id]!.add(_detail);
+                        } else {
+                          _points.putIfAbsent(doc.id, () => [_detail]);
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          }
-          notifyListeners();
-        });
+            notifyListeners();
+          },
+          onError: (error) {
+            print("Error in listenChildrenPoints: $error");
+            // Consider more sophisticated error handling, like showing a message to the user.
+          },
+        );
+    print("Setup listenChildrenPoints");
   }
 
   Future<void> listenChildrenJobs(String parentId) async {
@@ -190,30 +199,37 @@ class AuthProvider with ChangeNotifier {
         .collection(JOB_DB)
         .where("parent", isEqualTo: parentId)
         .snapshots()
-        .listen((snapshot) {
-          _jobs.clear();
-          for (QueryDocumentSnapshot doc in snapshot.docs) {
-            if (doc.exists) {
-              final data = doc.data() as Map<String, dynamic>?;
-              if (data != null) {
-                for (String key in data.keys) {
-                  if (key != "parent") {
-                    print("jobs: $data");
-                    for (var item in data[key]) {
-                      JobModel _detail = JobModel.fromMap(item);
-                      if (_jobs.containsKey(doc.id)) {
-                        _jobs[doc.id]!.add(_detail);
-                      } else {
-                        _jobs.putIfAbsent(doc.id, () => [_detail]);
+        .listen(
+          (snapshot) {
+            print("listenChildrenJobs snapshot");
+            _jobs.clear();
+            for (QueryDocumentSnapshot doc in snapshot.docs) {
+              if (doc.exists) {
+                final data = doc.data() as Map<String, dynamic>?;
+                if (data != null) {
+                  for (String key in data.keys) {
+                    if (key != "parent") {
+                      print("jobs: $data");
+                      for (var item in data[key]) {
+                        JobModel _detail = JobModel.fromMap(item);
+                        if (_jobs.containsKey(doc.id)) {
+                          _jobs[doc.id]!.add(_detail);
+                        } else {
+                          _jobs.putIfAbsent(doc.id, () => [_detail]);
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          }
-          notifyListeners();
-        });
+            notifyListeners();
+          },
+          onError: (error) {
+            print("Error in listenChildrenJobs: $error");
+          },
+        );
+    print("Setup listenChildrenJobs");
   }
 
   Future<void> listenToPoints(String email) async {
@@ -284,7 +300,7 @@ class AuthProvider with ChangeNotifier {
           .createUserWithEmailAndPassword(email: email, password: password);
       print(authResult);
       if (authResult.user != null) {
-        String svgCode = randomAvatarString(
+        String svgCode = ra.randomAvatarString(
           DateTime.now().millisecondsSinceEpoch.toRadixString(16),
         );
         _user = UserModel.fromMap({
@@ -318,7 +334,7 @@ class AuthProvider with ChangeNotifier {
       print(authResult);
       if (authResult.user != null) {
         if (svgCode.isEmpty) {
-          svgCode = randomAvatarString(
+          svgCode = ra.randomAvatarString(
             DateTime.now().millisecondsSinceEpoch.toRadixString(16),
           );
         }

@@ -4,12 +4,13 @@ import 'package:homebank/common_functions.dart';
 import 'package:homebank/models/job.dart';
 
 class JobProvider with ChangeNotifier {
-  Future<void> createJob(
-      {String email,
-      String type,
-      String note,
-      DateTime date,
-      int point}) async {
+  Future<void> createJob({
+    required String email,
+    required String type,
+    required String note,
+    required DateTime date,
+    required int point,
+  }) async {
     try {
       await db.runTransaction((transaction) async {
         DocumentReference ref = db.collection(JOB_DB).doc(email);
@@ -18,10 +19,18 @@ class JobProvider with ChangeNotifier {
         String datetime = getDateTimeString(date);
         List<dynamic> data = [];
         if (snapshot.exists) {
-          data = snapshot.data()[year_month] ?? [];
+          final docData = snapshot.data() as Map<String, dynamic>?;
+          if (docData != null && docData.containsKey(year_month)) {
+            data = docData[year_month] ?? [];
+          }
         }
-        JobModel detail =
-            JobModel(type: type, note: note, date: datetime, point: point);
+        JobModel detail = JobModel(
+          type: type,
+          note: note,
+          date: datetime,
+          point: point,
+          finish: false,
+        );
         data.add(detail.toJson());
         transaction.update(ref, {year_month: data});
       });
@@ -31,8 +40,13 @@ class JobProvider with ChangeNotifier {
     }
   }
 
-  Future<void> finishJob(
-      {String email, String type, String note, String date, int point}) async {
+  Future<void> finishJob({
+    required String email,
+    required String type,
+    required String note,
+    required String date,
+    required int point,
+  }) async {
     try {
       await db.runTransaction((transaction) async {
         DocumentReference ref = db.collection(JOB_DB).doc(email);
@@ -42,10 +56,18 @@ class JobProvider with ChangeNotifier {
         String datetime = getDateTimeString(date_time);
         List<dynamic> data = [];
         if (snapshot.exists) {
-          data = snapshot.data()[year_month] ?? [];
+          final docData = snapshot.data() as Map<String, dynamic>?;
+          if (docData != null && docData.containsKey(year_month)) {
+            data = docData[year_month] ?? [];
+          }
         }
-        JobModel detail =
-            JobModel(type: type, note: note, date: datetime, point: point);
+        JobModel detail = JobModel(
+          type: type,
+          note: note,
+          date: datetime,
+          point: point,
+          finish: false,
+        );
         for (int index = 0; index < data.length; index++) {
           if (data[index]['type'] == detail.type &&
               data[index]['note'] == detail.note &&
@@ -64,8 +86,13 @@ class JobProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteJob(
-      {String email, String type, String note, String date, int point}) async {
+  Future<void> deleteJob({
+    required String email,
+    required String type,
+    required String note,
+    required String date,
+    required int point,
+  }) async {
     try {
       await db.runTransaction((transaction) async {
         DocumentReference ref = db.collection(JOB_DB).doc(email);
@@ -75,10 +102,18 @@ class JobProvider with ChangeNotifier {
         String datetime = getDateTimeString(date_time);
         List<dynamic> data = [];
         if (snapshot.exists) {
-          data = snapshot.data()[year_month] ?? [];
+          final docData = snapshot.data() as Map<String, dynamic>?;
+          if (docData != null && docData.containsKey(year_month)) {
+            data = docData[year_month] ?? [];
+          }
         }
-        JobModel detail =
-            JobModel(type: type, note: note, date: datetime, point: point);
+        JobModel detail = JobModel(
+          type: type,
+          note: note,
+          date: datetime,
+          point: point,
+          finish: false,
+        );
         int delete_index = -1;
         for (int index = 0; index < data.length; index++) {
           if (data[index]['type'] == detail.type &&
@@ -101,21 +136,25 @@ class JobProvider with ChangeNotifier {
     }
   }
 
-  Future<Map<String, List<JobModel>>> getJobRecord({String email}) async {
+  Future<Map<String, List<JobModel>>> getJobRecord({
+    required String email,
+  }) async {
     try {
       DocumentReference ref = db.collection(JOB_DB).doc(email);
       DocumentSnapshot doc = await ref.get();
       if (doc.exists) {
         Map<String, List<JobModel>> list = {};
-        Map<String, dynamic> data = doc.data();
-        for (var key in data.keys.toList().reversed) {
-          if (key != 'parent') {
-            List<dynamic> details = data[key];
-            List<JobModel> tmp = [];
-            for (var detail in details) {
-              tmp.add(JobModel.fromMap(detail));
+        final data = doc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          for (var key in data.keys.toList().reversed) {
+            if (key != 'parent') {
+              List<dynamic> details = data[key] as List<dynamic>;
+              List<JobModel> tmp = [];
+              for (var detail in details) {
+                tmp.add(JobModel.fromMap(detail));
+              }
+              list.putIfAbsent(key, () => tmp);
             }
-            list.putIfAbsent(key, () => tmp);
           }
         }
         return list;

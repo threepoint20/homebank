@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
+
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,7 +12,8 @@ import 'package:in_date_range/in_date_range.dart';
 import 'package:provider/provider.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({Key key}) : super(key: key);
+  // 修正: 將 Key key 參數改為 super.key
+  const DetailPage({super.key});
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -24,8 +27,10 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<UserModel> children =
-        Provider.of<AuthProvider>(context, listen: true).children;
+    List<UserModel> children = Provider.of<AuthProvider>(
+      context,
+      listen: true,
+    ).children;
     if (selected.email.isEmpty && children.isNotEmpty) {
       selected = children.first;
     }
@@ -37,7 +42,7 @@ class _DetailPageState extends State<DetailPage> {
           if (selected.email.isNotEmpty)
             TextButton(
               onPressed: () {
-                scaffoldKey.currentState.openEndDrawer();
+                scaffoldKey.currentState?.openEndDrawer(); // 修正: 使用 ?. 進行空值檢查
               },
               child: CircleAvatar(child: SvgPicture.string(selected.avatarSvg)),
             ),
@@ -45,21 +50,23 @@ class _DetailPageState extends State<DetailPage> {
       ),
       endDrawer: Drawer(
         child: ListView.builder(
-            itemCount: children.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                onTap: () {
-                  setState(() {
-                    selected = children[index];
-                    scaffoldKey.currentState.closeEndDrawer();
-                  });
-                },
-                leading: CircleAvatar(
-                  child: SvgPicture.string(children[index].avatarSvg),
-                ),
-                title: Text(children[index].name),
-              );
-            }),
+          itemCount: children.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              onTap: () {
+                setState(() {
+                  selected = children[index];
+                  scaffoldKey.currentState
+                      ?.closeEndDrawer(); // 修正: 使用 ?. 進行空值檢查
+                });
+              },
+              leading: CircleAvatar(
+                child: SvgPicture.string(children[index].avatarSvg),
+              ),
+              title: Text(children[index].name),
+            );
+          },
+        ),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -67,10 +74,10 @@ class _DetailPageState extends State<DetailPage> {
         padding: EdgeInsets.only(left: 10, right: 10),
         child: Column(
           children: [
-            buildMonthNavigationRow(),
+            buildMonthNavigationRow(context), // 修正: 傳入 context
             if (selected.email.isNotEmpty)
               Expanded(
-                child: buildList(),
+                child: buildList(context), // 修正: 傳入 context
               ),
           ],
         ),
@@ -78,16 +85,20 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget buildList() {
-    Map<String, dynamic> all_points =
-        Provider.of<AuthProvider>(context, listen: true).points;
+  Widget buildList(BuildContext context) {
+    Map<String, dynamic> all_points = Provider.of<AuthProvider>(
+      context,
+      listen: true,
+    ).points;
     print("all_points: $all_points");
     List<PointModel> _data = all_points[selected.email] ?? [];
     List<PointModel> data = _data
         .where((element) => element.type != ALL_WORK_TYPES.last)
-        .where((element) => _range.isEmpty
-            ? isInMonth(element.date, _currentDate)
-            : isInRange(element.date, DateRange(_range.first, _range.last)))
+        .where(
+          (element) => _range.isEmpty
+              ? isInMonth(element.date, _currentDate)
+              : isInRange(element.date, DateRange(_range.first, _range.last)),
+        )
         .toList();
 
     return ListView.builder(
@@ -95,13 +106,18 @@ class _DetailPageState extends State<DetailPage> {
         PointModel model = data[index];
         DateTime _date = DateTime.parse(model.date);
         return buildDetailTile(
-            "${_date.month}/${_date.day}", model.type, model.note, model.point);
+          "${_date.month}/${_date.day}",
+          model.type,
+          model.note,
+          model.point,
+        );
       },
       itemCount: data.length,
     );
   }
 
-  Widget buildMonthNavigationRow() {
+  Widget buildMonthNavigationRow(BuildContext context) {
+    // 修正: 接收 context
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,8 +127,11 @@ class _DetailPageState extends State<DetailPage> {
             setState(() {
               _range.clear();
               if (_currentDate.month > 1) {
-                _currentDate =
-                    DateTime(_currentDate.year, _currentDate.month - 1, 1);
+                _currentDate = DateTime(
+                  _currentDate.year,
+                  _currentDate.month - 1,
+                  1,
+                );
               } else {
                 _currentDate = DateTime(_currentDate.year - 1, 12, 1);
               }
@@ -128,20 +147,22 @@ class _DetailPageState extends State<DetailPage> {
                 selectedDayHighlightColor: Colors.purple[800],
                 closeDialogOnCancelTapped: true,
               );
-              List<DateTime> picked = await showCalendarDatePicker2Dialog(
+              List<DateTime?>? picked = await showCalendarDatePicker2Dialog(
+                // 修正: 變數改為可空
                 context: context,
                 config: config,
                 dialogSize: const Size(325, 400),
                 borderRadius: BorderRadius.circular(15),
-                initialValue: [_currentDate],
+                value: [_currentDate], // 修正: 將 initialValue 改為 value
                 dialogBackgroundColor: Colors.white,
               );
-              if (picked.isNotEmpty) {
-                setState(
-                  () {
-                    _range = picked;
-                  },
-                );
+              if (picked != null && picked.isNotEmpty) {
+                // 修正: 進行空值檢查
+                setState(() {
+                  _range = picked
+                      .whereType<DateTime>()
+                      .toList(); // 修正: 過濾掉 null
+                });
               }
             }),
             child: Container(
@@ -149,10 +170,13 @@ class _DetailPageState extends State<DetailPage> {
               child: Center(
                 child: _range.isEmpty
                     ? Text("${_currentDate.year}年${_currentDate.month}月")
-                    : Column(children: [
-                        Text(
-                            "${_range.first.year}-${_range.first.month}-${_range.first.day} ~ ${_range.last.year}-${_range.last.month}-${_range.last.day}")
-                      ]),
+                    : Column(
+                        children: [
+                          Text(
+                            "${_range.first.year}-${_range.first.month}-${_range.first.day} ~ ${_range.last.year}-${_range.last.month}-${_range.last.day}",
+                          ),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -162,8 +186,11 @@ class _DetailPageState extends State<DetailPage> {
             setState(() {
               _range.clear();
               if (_currentDate.month < 12) {
-                _currentDate =
-                    DateTime(_currentDate.year, _currentDate.month + 1, 1);
+                _currentDate = DateTime(
+                  _currentDate.year,
+                  _currentDate.month + 1,
+                  1,
+                );
               } else {
                 _currentDate = DateTime(_currentDate.year + 1, 1, 1);
               }
@@ -179,25 +206,15 @@ class _DetailPageState extends State<DetailPage> {
     return ListTile(
       title: Row(
         children: [
-          Text(
-            date,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 14,
-            ),
-          ),
+          Text(date, style: TextStyle(color: Colors.black87, fontSize: 14)),
           SizedBox(width: 20),
-          Text(
-            type,
-            style: TextStyle(
-              color: getTypeColor(type),
-              fontSize: 14,
-            ),
-          ),
+          Text(type, style: TextStyle(color: getTypeColor(type), fontSize: 14)),
         ],
       ),
-      subtitle:
-          Text(detail, style: TextStyle(color: Colors.black, fontSize: 16)),
+      subtitle: Text(
+        detail,
+        style: TextStyle(color: Colors.black, fontSize: 16),
+      ),
       trailing: SizedBox(
         width: 80,
         child: Row(

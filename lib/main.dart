@@ -21,17 +21,21 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(EasyLocalization(
-    supportedLocales: [
-      Locale('zh', 'TW'),
-    ],
-    fallbackLocale: Locale('zh', 'TW'),
-    path: 'assets/translations',
-    child: MyApp(),
-  ));
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        // 修正: 加上 const
+        Locale('zh', 'TW'),
+      ],
+      fallbackLocale: const Locale('zh', 'TW'), // 修正: 加上 const
+      path: 'assets/translations',
+      child: const MyApp(), // 修正: 加上 const
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key}); // 修正: 加上 const 和 super.key
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -41,72 +45,65 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (ctx) => AuthProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => PointProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => JobProvider(),
-        ),
+        ChangeNotifierProvider(create: (ctx) => AuthProvider()),
+        ChangeNotifierProvider(create: (ctx) => PointProvider()),
+        ChangeNotifierProvider(create: (ctx) => JobProvider()),
       ],
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
           print(
-              "[DEBUG] currentFocus: $currentFocus, hasPrimaryFocus: ${currentFocus.hasPrimaryFocus}");
+            "[DEBUG] currentFocus: $currentFocus, hasPrimaryFocus: ${currentFocus.hasPrimaryFocus}",
+          );
           if (!currentFocus.hasPrimaryFocus) {
             FocusScope.of(context).requestFocus(FocusNode());
           }
         },
         child: MaterialApp(
           theme: ThemeData(
-            primaryColor: Color(0xFF003783),
-            primaryColorLight: Color(0xFFEEF4FC),
+            primaryColor: const Color(0xFF003783), // 修正: 加上 const
+            primaryColorLight: const Color(0xFFEEF4FC), // 修正: 加上 const
             fontFamily: 'Noto Sans TC',
             textTheme: Theme.of(context).textTheme.apply(
-                  bodyColor: Color(0xff003783),
-                  displayColor: Color(0xff003783),
-                ),
-            appBarTheme: AppBarTheme(
-                backgroundColor: Color(0xFFEEF4FC),
-                // This will be applied to the "back" icon
-                iconTheme: IconThemeData(
-                  color: Color(0xFF313438),
-                ),
-                // This will be applied to the action icon buttons that locates on the right side
-                actionsIconTheme: IconThemeData(
-                  color: Color(0xFF313438),
-                ),
-                centerTitle: false,
-                elevation: 0,
-                titleTextStyle: TextStyle(
-                  color: Color(0xFF313438),
-                  fontSize: 20,
-                )),
+              bodyColor: const Color(0xff003783), // 修正: 加上 const
+              displayColor: const Color(0xff003783), // 修正: 加上 const
+            ),
+            appBarTheme: const AppBarTheme(
+              // 修正: 加上 const
+              backgroundColor: Color(0xFFEEF4FC),
+              // This will be applied to the "back" icon
+              iconTheme: IconThemeData(color: Color(0xFF313438)),
+              // This will be applied to the action icon buttons that locates on the right side
+              actionsIconTheme: IconThemeData(color: Color(0xFF313438)),
+              centerTitle: false,
+              elevation: 0,
+              titleTextStyle: TextStyle(color: Color(0xFF313438), fontSize: 20),
+            ),
           ),
           localizationsDelegates: [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
             DefaultCupertinoLocalizations.delegate,
-            EasyLocalization.of(context).delegate,
+            EasyLocalization.of(context)!.delegate, // 修正: 加上 !
           ],
-          supportedLocales: EasyLocalization.of(context).supportedLocales,
-          locale: EasyLocalization.of(context).locale,
+          supportedLocales: EasyLocalization.of(
+            context,
+          )!.supportedLocales, // 修正: 加上 !
+          locale: EasyLocalization.of(context)!.locale, // 修正: 加上 !
           debugShowCheckedModeBanner: false,
           title: '兒童銀行',
           routes: appRoutes,
           builder: EasyLoading.init(),
           home: AnimatedSplashScreen(
-              duration: 2000,
-              splash: Image.asset("assets/images/img_piggy_add_award.png"),
-              nextScreen: LoginEmailPage(),
-              splashTransition: SplashTransition.fadeTransition,
-              pageTransitionType: PageTransitionType.fade,
-              splashIconSize: 200,
-              backgroundColor: Colors.white),
+            duration: 2000,
+            splash: Image.asset("assets/images/img_piggy_add_award.png"),
+            nextScreen: const LoginEmailPage(), // 修正: 加上 const
+            splashTransition: SplashTransition.fadeTransition,
+            pageTransitionType: PageTransitionType.fade,
+            splashIconSize: 200,
+            backgroundColor: Colors.white,
+          ),
         ),
       ),
     );

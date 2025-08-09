@@ -7,19 +7,19 @@ class CustomInput extends StatelessWidget {
   final TextInputType kyboardType;
   final bool isPassword;
   final TextCapitalization textCapitalization;
-  final Widget suffixIcon;
-  final double height;
+  final Widget? suffixIcon; // 修正: 將 suffixIcon 變數設為可空
+  final double? height; // 修正: 將 height 變數設為可空
   final bool enable;
   final TextStyle hintStyle;
-  final Function validator;
+  final String? Function(String?)? validator; // 修正: 使用更精確的類型
   final bool readOnly;
   final List<String> suggestons;
 
   const CustomInput({
-    Key key,
-    @required this.icon,
-    @required this.hintText,
-    @required this.textEditingController,
+    super.key, // 修正: 使用 super.key 的現代寫法
+    required this.icon, // 修正: 使用 required 關鍵字
+    required this.hintText, // 修正: 使用 required 關鍵字
+    required this.textEditingController, // 修正: 使用 required 關鍵字
     this.readOnly = false,
     this.kyboardType = TextInputType.text,
     this.isPassword = false,
@@ -30,7 +30,7 @@ class CustomInput extends StatelessWidget {
     this.hintStyle = const TextStyle(color: Color(0xFFA3BAFC)),
     this.validator,
     this.suggestons = const [],
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +55,9 @@ class CustomInput extends StatelessWidget {
             matches.addAll(suggestons);
 
             matches.retainWhere((s) {
-              return s
-                  .toLowerCase()
-                  .contains(textEditingValue.text.toLowerCase());
+              return s.toLowerCase().contains(
+                textEditingValue.text.toLowerCase(),
+              );
             });
             return matches;
           }
@@ -66,60 +66,73 @@ class CustomInput extends StatelessWidget {
           print('You just selected $selection');
           textEditingController.text = selection;
         },
-        fieldViewBuilder: (BuildContext context,
-            TextEditingController editingController,
-            FocusNode focusNode,
-            VoidCallback onFieldSubmitted) {
-          return TextFormField(
-            validator: validator,
-            readOnly: readOnly,
-            textAlignVertical: TextAlignVertical.center,
-            textCapitalization: textCapitalization,
-            controller: editingController,
-            autocorrect: false,
-            keyboardType: kyboardType,
-            obscureText: isPassword,
-            focusNode: focusNode,
-            style: TextStyle(color: Theme.of(context).primaryColor),
-            onChanged: (value) {
-              textEditingController.text = value;
+        fieldViewBuilder:
+            (
+              BuildContext context,
+              TextEditingController editingController,
+              FocusNode focusNode,
+              VoidCallback onFieldSubmitted,
+            ) {
+              return TextFormField(
+                validator: validator,
+                readOnly: readOnly,
+                textAlignVertical: TextAlignVertical.center,
+                textCapitalization: textCapitalization,
+                controller: editingController,
+                autocorrect: false,
+                keyboardType: kyboardType,
+                obscureText: isPassword,
+                focusNode: focusNode,
+                style: TextStyle(color: Theme.of(context).primaryColor),
+                onChanged: (value) {
+                  textEditingController.text = value;
+                },
+                decoration: InputDecoration(
+                  isDense: true,
+                  suffixIcon: suffixIcon,
+                  hintText: hintText,
+                  hintStyle: hintStyle,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1, color: Colors.white),
+                  ),
+                  filled: !enable,
+                ),
+              );
             },
-            decoration: InputDecoration(
-              isDense: true,
-              suffixIcon: suffixIcon,
-              hintText: hintText,
-              hintStyle: hintStyle,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-                borderSide: BorderSide(width: 1, color: Colors.white),
-              ),
-              filled: !enable,
-            ),
-          );
-        },
-        optionsViewBuilder: (BuildContext context,
-            void Function(String) onSelected, Iterable<String> options) {
-          return Material(
-              child: SizedBox(
+        optionsViewBuilder:
+            (
+              BuildContext context,
+              void Function(String) onSelected,
+              Iterable<String> options,
+            ) {
+              return Material(
+                child: SizedBox(
                   height: 200,
                   child: SingleChildScrollView(
-                      child: Column(
-                    children: options.map((opt) {
-                      return InkWell(
+                    child: Column(
+                      children: options.map((opt) {
+                        return InkWell(
                           onTap: () {
                             onSelected(opt);
                           },
                           child: Container(
-                              padding: EdgeInsets.only(right: 60),
-                              child: Card(
-                                  child: Container(
+                            padding: EdgeInsets.only(right: 60),
+                            child: Card(
+                              child: Container(
                                 width: double.infinity,
                                 padding: EdgeInsets.all(10),
                                 child: Text(opt),
-                              ))));
-                    }).toList(),
-                  ))));
-        },
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              );
+            },
       ),
     );
   }

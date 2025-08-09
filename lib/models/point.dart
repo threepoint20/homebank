@@ -16,11 +16,14 @@ class PointModel {
   });
 
   factory PointModel.fromFirestore(DocumentSnapshot doc) {
-    Map data = doc.data();
-    return PointModel.fromMap(data);
+    // 修正: 將 doc.data() 轉型為 Map<String, dynamic> 並處理潛在的空值
+    final data = doc.data() as Map<String, dynamic>?;
+    // 如果 data 是 null，則傳遞一個空的 Map 給 fromMap
+    return PointModel.fromMap(data ?? {});
   }
 
-  factory PointModel.fromMap(Map data) {
+  // 修正: 將 Map 參數明確指定為 Map<String, dynamic>
+  factory PointModel.fromMap(Map<String, dynamic> data) {
     return PointModel(
       type: data['type'] ?? "",
       note: data['note'] ?? "",

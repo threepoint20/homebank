@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:homebank/helpers/helpers.dart';
@@ -7,21 +9,22 @@ import 'package:homebank/pages/children/my_statistics_page.dart';
 import 'package:homebank/widgets/large_button.dart';
 
 class MyManagementPage extends StatelessWidget {
-  MyManagementPage({Key key}) : super(key: key);
+  // 修正: 將 Key key 參數改為 super.key
+  const MyManagementPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('我的'),
-      ),
+      appBar: AppBar(title: Text('我的')),
       body: Container(
         child: Column(
           children: [
             ListTile(
               onTap: () {
                 Navigator.push(
-                    context, navegateFadein(context, MemberModifyPage()));
+                  context,
+                  navegateFadein(context, const MemberModifyPage()),
+                );
               },
               leading: Image.asset("assets/images/personal.png", width: 20),
               title: Text("帳號管理"),
@@ -29,16 +32,16 @@ class MyManagementPage extends StatelessWidget {
             ListTile(
               onTap: () {
                 Navigator.push(
-                    context, navegateFadein(context, MyStatisticsPage()));
+                  context,
+                  navegateFadein(context, const MyStatisticsPage()),
+                );
               },
               leading: Image.asset("assets/images/data.png", width: 20),
               title: Text("統計資料"),
             ),
-            Expanded(
-              child: Container(),
-            ),
+            Expanded(child: Container()),
             Padding(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: LargeButton(
                 onTap: () {
                   showSignoutConfimationDialog(context);
@@ -55,21 +58,26 @@ class MyManagementPage extends StatelessWidget {
 
   showSignoutConfimationDialog(BuildContext context) {
     return showDialog(
+      context: context, // 修正: 將 context 參數提前
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(15.0),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
         ),
         elevation: 5.0,
         contentPadding: const EdgeInsets.only(
-            left: 16.0, right: 16.0, top: 20.0, bottom: 10.0),
+          left: 16.0,
+          right: 16.0,
+          top: 20.0,
+          bottom: 10.0,
+        ),
         content: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Text(
+            const Text(
+              // 修正: 加上 const
               '確認登出',
               style: TextStyle(
                 fontSize: 14.5,
@@ -78,10 +86,12 @@ class MyManagementPage extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-            SizedBox(
+            const SizedBox(
+              // 修正: 加上 const
               height: 15.0,
             ),
-            Text(
+            const Text(
+              // 修正: 加上 const
               '是否確認要登出？',
               style: TextStyle(
                 fontSize: 14.0,
@@ -90,7 +100,8 @@ class MyManagementPage extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-            SizedBox(
+            const SizedBox(
+              // 修正: 加上 const
               height: 5.0,
             ),
             Row(
@@ -98,13 +109,14 @@ class MyManagementPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Container(
+                SizedBox(
                   width: 50.0,
                   child: TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text(
+                    child: const Text(
+                      // 修正: 加上 const
                       '否',
                       style: TextStyle(
                         color: Colors.black87,
@@ -115,16 +127,18 @@ class MyManagementPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 50.0,
                   child: TextButton(
                     onPressed: () async {
                       Navigator.pop(context);
                       await FirebaseAuth.instance.signOut();
                       await Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginEmailPage()));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginEmailPage(),
+                        ),
+                      );
                     },
                     child: Text(
                       '是',
@@ -142,8 +156,6 @@ class MyManagementPage extends StatelessWidget {
           ],
         ),
       ),
-      barrierDismissible: false,
-      context: context,
     );
   }
 }
