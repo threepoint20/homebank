@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>326511751670-p47l942nsv0i8ohiadnce6p3o3or0dlr.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.326511751670-p47l942nsv0i8ohiadnce6p3o3or0dlr</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>326511751670-27835qd8ege4rgm6d6vomutg6ka0u7im.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB7rHsMLjd-thgCUuSY96IvYrGy5IaQQWU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>326511751670</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>tw.com.bencheng.homebank</string>
+	<key>PROJECT_ID</key>
+	<string>homebank-75de2</string>
+	<key>STORAGE_BUCKET</key>
+	<string>homebank-75de2.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:326511751670:ios:5a3510d554da7dea0b57d7</string>
+</dict>
+</plist>

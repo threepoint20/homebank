@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "326511751670",
+    "project_id": "homebank-75de2",
+    "storage_bucket": "homebank-75de2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326511751670:android:8b324d5ebb5469450b57d7",
+        "android_client_info": {
+          "package_name": "tw.com.bencheng.homebank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "326511751670-uhrohol1hisg5256ovlfk3tl0i4c3ioo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcMKvYZyapia-gNyTuWhQHPuKBtzGF0y0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "326511751670-uhrohol1hisg5256ovlfk3tl0i4c3ioo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
